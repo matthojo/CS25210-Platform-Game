@@ -1224,6 +1224,46 @@ button.btn.small, input[type="submit"].btn.small {
     margin-top: 5px;
 }
 
+/* A full-screen element that is not the root element should be stretched
+   to cover the viewport. */
+:full-screen:not(:root) {
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index:2147483647;
+    background:black;
+    /* override mapped width and height attributes */
+    width:100% !important;
+    height:100% !important;
+}
+/* If there is a full-screen element that is not the root then
+   we should hide the viewport scrollbar. */
+:root:full-screen-ancestor {
+    overflow:hidden;
+}
+:full-screen-ancestor {
+    /* Ancestors of a full-screen element should not induce stacking contexts
+that would prevent the full-screen element from being on top. */
+    z-index:auto;
+    /* Ancestors of a full-screen element should not be partially transparent,
+since that would apply to the full-screen element and make the page visible
+behind it. It would also create a pseudo-stacking-context that would let content
+draw on top of the full-screen element. */
+    opacity:1;
+    /* Ancestors of a full-screen element should not apply SVG masking, clipping, or
+  filtering, since that would affect the full-screen element and create a pseudo-
+  stacking context. */
+    mask:none;
+    clip:auto;
+    filter:none;
+}
+:full-screen body {
+    width: 100%;
+    height: 100%;
+}
+
 /* ==|== primary styles =====================================================
    Author: Matthew Harrison-Jones
    ========================================================================== */
@@ -1250,11 +1290,9 @@ a:hover {
 canvas {
     display: block;
     border: 1px solid #CCC;
-    margin: 0 auto;
     margin-top: 40px;
     margin-bottom: 20px;
     background: #FFF;
-    cursor: move;
 }
 audio .sound{display: none;}
 

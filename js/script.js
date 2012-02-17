@@ -106,6 +106,12 @@ $(document).ready(function () {
      * Draws everything together.
      */
     function draw() {
+        //Check canvas width.
+        canvasWidth = $(window).get(0).innerWidth;
+        //Set width
+        canvas.attr("width", canvasWidth);
+        canvas.attr("height", canvasHeight);
+
         // Clear the frame
         context.save();
         context.clearRect(0, 0, canvasWidth, canvasHeight);
