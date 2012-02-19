@@ -71,7 +71,7 @@ $(document).ready(function () {
      */
     var canvas = $("#myCanvas");
     var context = canvas.get(0).getContext("2d");
-    var canvasWidth = $(window).get(0).innerWidth;
+    var canvasWidth = 800;
     var canvasHeight = 600;
 
     canvas.attr("width", canvasWidth);
@@ -95,23 +95,153 @@ $(document).ready(function () {
      * UI Elements
      */
     var uiStart = $(".start"), uiPause = $(".paused"), uiOver = $(".gameOver"), playButton = $(".playGame");
+    //sprite.src = '/img/sprite.gif'; // Set source path
+
+    /**
+     * Game UI Settings
+     */
+    var moveSpeed = 0.2;
 
     /**
      * Objects
      */
 
-    var Background, Player, Enemy, Coin, Item
+    var Sprites, Player, Enemy, Coin, Item, Cloud;
+
+    Sprites = function(){
+        var sprite = [new Image(), false];
+
+        sprite[0].src = "img/sprites.gif";
+        sprite[0].onload = function() {
+            sprite[1] = true;
+        };
+
+        var draw = function(sx,sy, sWidth, sHeight, dx, dy, dWidth, dHeight){
+            if(sprite[1]) context.drawImage(sprite[0], sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+        };
+
+        return {
+            draw: draw
+        };
+    };
+
+    /**
+     * Status: Still = 0
+     *         Running = 1
+     *         Jump = 2
+     *         Slide = 3
+     * @param x
+     * @param y
+     */
+    Player = function(x,y){
+        var image = {x:16, y:0, w: 16, h:16};
+        var pos = {x:x,y:y};
+        var settings = {width: 32, height: 32, health: 100, status: 0};
+        var draw = function(){
+            switch(settings.status){
+                case 0:
+                    sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+                    break;
+                case 1:
+                    sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+
+                    break;
+                case 2:
+                    sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+
+                     break;
+                case 3:
+                    sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+
+                    break;
+                default:
+                    sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+            }
+        };
+        var move = function(direction){
+            pos.offsetx -= moveSpeed;
+            if((pos.x+pos.offsetx+settings.width) <= 0){
+                pos.offsetx += canvasWidth+settings.width;
+                pos.offsety = randomFromTo(-42, 42);
+                if(pos.offsety+pos.y < 0) pos.offsety = 0;
+
+            }
+        };
+        return {
+            image: image,
+            settings: settings,
+            pos: pos,
+            draw: draw,
+            move: move
+        };
+    };
+
+    Coin = function(x,y){
+        var image = {x:16, y:0, w: 16, h:16};
+        var pos = {x:x,y:y};
+        var settings = {width: 32, height: 32};
+        var draw = function(){
+            sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+        };
+        return {
+            image: image,
+            settings: settings,
+            pos: pos,
+            draw: draw
+        };
+    };
+
+    Cloud = function(x,y){
+        var image = {w: 41, h:21, x:36, y:0};
+        var type = randomFromTo(0,1);
+        if(type==1){
+            image.y = 22
+        }else{
+            image.y = 0
+        }
+        var pos = {x:x,y:y, offsetx:0, offsety:0};
+        var settings = {width: 81, height: 42};
+        var draw = function(){
+            sprite.draw(image.x,image.y, image.w, image.h, pos.x+pos.offsetx, pos.y+pos.offsety, settings.width, settings.height);
+            context.rect(image.x, image.y, image.w, image.h);
+            //context.drawImage(sprite, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
+        };
+        var move = function(){
+            pos.offsetx -= moveSpeed;
+            if((pos.x+pos.offsetx+settings.width) <= 0){
+                pos.offsetx += canvasWidth+settings.width;
+                pos.offsety = randomFromTo(-42, 42);
+                if(pos.offsety+pos.y < 0) pos.offsety = 0;
+
+            }
+        };
+        return {
+            image: image,
+            settings: settings,
+            pos: pos,
+            move: move,
+            draw: draw
+        };
+    };
+    /**
+     * Create object instances
+     */
+    var sprite = new Sprites();
+    var coin = new Coin(20, 20);
+
+    var clouds = [];
+    var cloudCount = 4;
+    for(var i=0;i<cloudCount; i++){
+        var x = randomFromTo(0, canvasWidth);
+        var y = randomFromTo(10, 42);
+        var cloud = new Cloud(x, y);
+        clouds.push(cloud);
+    }
 
     /**
      * Draws everything together.
      */
     function draw() {
-        //Check canvas width.
-        canvasWidth = $(window).get(0).innerWidth;
-        //Set width
-        canvas.attr("width", canvasWidth);
-        canvas.attr("height", canvasHeight);
-
         // Clear the frame
         context.save();
         context.clearRect(0, 0, canvasWidth, canvasHeight);
@@ -129,8 +259,21 @@ $(document).ready(function () {
         if(downKey){
         }
         if(space){
-
         }
+
+
+        //Draw Clouds
+        context.save();
+        for(var i=0; i< clouds.length; i++){
+            var cloud = clouds[i];
+            cloud.draw();
+            cloud.move();
+        }
+        context.restore();
+
+        context.save();
+        coin.draw();
+        context.restore();
 
     }
 
@@ -315,15 +458,12 @@ $(document).ready(function () {
             window.document.addEventListener('touchmove', onTouchMove, false);
             window.document.addEventListener('touchend', onTouchEnd, false);
             window.document.addEventListener("orientationChanged", draw);
-            window.document.resize(draw);
             window.document.addEventListener("touchcancel", onTouchEnd, false);
         } else {
             $(document).keydown(onKeyDown);
             $(document).keyup(onKeyUp);
         }
     });
-    //Redraw on window resize
-    $(window).resize(draw);
 
     function startGame() {
         requestAnimationFrame(startGame);
