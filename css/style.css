@@ -1308,6 +1308,11 @@ canvas {
     margin-top: 40px;
     margin-bottom: 20px;
     background: url('../img/background.gif') left top repeat-x;
+    image-rendering: optimizeSpeed !important;
+    image-rendering: -moz-crisp-edges !important;
+    image-rendering: -webkit-optimize-contrast !important;
+    image-rendering: optimize-contrast !important;
+    -ms-interpolation-mode :nearest-neighbor !important;
 }
 audio .sound{display: none;}
 
@@ -1381,7 +1386,6 @@ audio .sound{display: none;}
 .menu.start .highScore{
     color: #FFF;
     font-size: 28px;
-    font-weight: bold;
     margin-bottom: 20px;
 }
 .menu.paused{
