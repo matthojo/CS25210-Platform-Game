@@ -100,13 +100,16 @@ $(document).ready(function () {
     /**
      * Game UI Settings
      */
+    if("mozImageSmoothingEnabled" in context){
+        context.mozImageSmoothingEnabled = false;
+    }
     var moveSpeed = 0.2;
 
     /**
      * Objects
      */
 
-    var Sprites, Player, Enemy, Coin, Item, Cloud;
+    var Sprites, Player, Enemy, Coin, Heart, Item, Cloud, Block;
 
     Sprites = function(){
         var sprite = [new Image(), false];
@@ -117,7 +120,9 @@ $(document).ready(function () {
         };
 
         var draw = function(sx,sy, sWidth, sHeight, dx, dy, dWidth, dHeight){
-            if(sprite[1]) context.drawImage(sprite[0], sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+            if(sprite[1]){
+                context.drawImage(sprite[0], sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+            }
         };
 
         return {
@@ -136,7 +141,7 @@ $(document).ready(function () {
     Player = function(x,y){
         var image = {x:16, y:0, w: 16, h:16};
         var pos = {x:x,y:y};
-        var settings = {width: 32, height: 32, health: 100, status: 0};
+        var settings = {width: 32, height: 32, health: 100, status: 0, lives: 3};
         var draw = function(){
             switch(settings.status){
                 case 0:
@@ -191,6 +196,44 @@ $(document).ready(function () {
         };
     };
 
+    Heart = function(x,y){
+        var image = {x:16, y:17, w: 16, h:14};
+        var pos = {x:x,y:y};
+        var settings = {width: 32, height: 28};
+        var draw = function(){
+            sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+        };
+        return {
+            image: image,
+            settings: settings,
+            pos: pos,
+            draw: draw
+        };
+    };
+
+    /**
+     * Type: Brick = 1
+     *       Metal  = 2
+     *       Glass = 3
+     * @param x
+     * @param y
+     * @param type
+     */
+    Block = function(x,y,type){
+        var image = {x:80, y:(16*type), w: 16, h:16};
+        var pos = {x:x,y:y};
+        var settings = {width: 32, height: 32, type: type};
+        var draw = function(){
+            sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+        };
+        return {
+            image: image,
+            settings: settings,
+            pos: pos,
+            draw: draw
+        };
+    };
+
     Cloud = function(x,y){
         var image = {w: 41, h:21, x:36, y:0};
         var type = randomFromTo(0,1);
@@ -199,7 +242,7 @@ $(document).ready(function () {
         }else{
             image.y = 0
         }
-        var pos = {x:x,y:y, offsetx:0, offsety:0};
+        var pos = {x:x,y:y, offsetx:0, offsety:0, speed: 0};
         var settings = {width: 81, height: 42};
         var draw = function(){
             sprite.draw(image.x,image.y, image.w, image.h, pos.x+pos.offsetx, pos.y+pos.offsety, settings.width, settings.height);
@@ -207,11 +250,13 @@ $(document).ready(function () {
             //context.drawImage(sprite, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
         };
         var move = function(){
-            pos.offsetx -= moveSpeed;
+            pos.offsetx -= moveSpeed+pos.speed;
             if((pos.x+pos.offsetx+settings.width) <= 0){
                 pos.offsetx += canvasWidth+settings.width;
                 pos.offsety = randomFromTo(-42, 42);
                 if(pos.offsety+pos.y < 0) pos.offsety = 0;
+                type = randomFromTo(0,1);
+                //pos.speed = randomFromTo(0,1);
 
             }
         };
@@ -228,6 +273,10 @@ $(document).ready(function () {
      */
     var sprite = new Sprites();
     var coin = new Coin(20, 20);
+    var heart = new Heart(20, 58);
+    var block1 = new Block(50, 200, 1);
+    var block2 = new Block(84, 200, 2);
+    var block3 = new Block(118, 200, 3);
 
     var clouds = [];
     var cloudCount = 4;
@@ -273,6 +322,10 @@ $(document).ready(function () {
 
         context.save();
         coin.draw();
+        heart.draw();
+        block1.draw();
+        block2.draw();
+        block3.draw();
         context.restore();
 
     }
@@ -306,15 +359,6 @@ $(document).ready(function () {
             debug = true;
 
         }
-    }
-
-    /**
-     * Generate a random number between 2 numbers.
-     * @param from
-     * @param to
-     */
-    function randomFromTo(from, to) {
-        return Math.floor(Math.random() * (to - from + 1) + from);
     }
 
     /******
@@ -447,6 +491,16 @@ $(document).ready(function () {
     function bitwiseRound(number){
         var rounded = ~~ (0.5 + number);
         return rounded;
+    }
+
+
+    /**
+     * Generate a random number between 2 numbers.
+     * @param from
+     * @param to
+     */
+    function randomFromTo(from, to) {
+        return bitwiseRound(Math.random() * (to - from + 1) + from);
     }
 
     /**
