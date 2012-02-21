@@ -104,6 +104,8 @@ $(document).ready(function () {
         context.mozImageSmoothingEnabled = false;
     }
     var moveSpeed = 0.2;
+    var blockSize = 32;
+    var floorHeight = canvasHeight - 49;
 
     /**
      * Objects
@@ -212,23 +214,96 @@ $(document).ready(function () {
     };
 
     /**
-     * Type: Brick = 1
-     *       Metal  = 2
-     *       Glass = 3
+     * Type: 1 = Brick
+     *       2 = Metal
+     *       3 = Glass
+     * Layout:
+     *      1 = Single Block
+     *      2 = Solid Block
+     *      3 = Stair Right
+     *      4 = Stair Left
+     *      5 = Stairs Both Sides
      * @param x
      * @param y
      * @param type
      */
-    Block = function(x,y,type){
+    Block = function(x,y,type,layout,nW,nH){
         var image = {x:80, y:(16*type), w: 16, h:16};
         var pos = {x:x,y:y};
-        var settings = {width: 32, height: 32, type: type};
+        var settings = {width: blockSize, height: blockSize, type: type};
+        var layout = {type: layout, width: blockSize*nW, height:blockSize*nH};
         var draw = function(){
-            sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+            switch(layout.type){
+                case 1:
+                    // Single Block
+                    sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+                    break;
+                case 2:
+                    // Block Custom Solid
+                    var numWide = nW;
+                    var numHigh = nH;
+                    for (var i = 0; i < numWide; i++) {
+                        // ADD ROWS
+                        for (var j = 0; j < numHigh; j++) {
+                            // ADD COLS
+                            sprite.draw(image.x,image.y, image.w, image.h, pos.x+(i*blockSize), pos.y-(j*blockSize), settings.width, settings.height);
+                        }
+                    }
+                    break;
+                case 3:
+                    // Block Custom Steps Right
+                    var numWide = nW;
+                    var numHigh = nH;
+                    var step = numWide;
+                    for (var j = 0; j < numHigh; j++) {
+                        // ADD ROWS
+                        if(j > 0) numWide--;
+                        for (var i = 0; i < numWide; i++) {
+                            // ADD COLS
+                                sprite.draw(image.x,image.y, image.w, image.h, pos.x+(i*blockSize), pos.y-(j*blockSize), settings.width, settings.height);
+
+                        }
+                    }
+                    break;
+                case 4:
+                    // Block Custom Steps Right
+                    var numWide = nW;
+                    var numHigh = nH;
+                    var step = 0;
+                    for (var j = 0; j < numHigh; j++) {
+                        // ADD ROWS
+                        step++;
+                        for (var i = 0; i < numWide; i++) {
+                            // ADD COLS
+                            if(i > step) sprite.draw(image.x,image.y, image.w, image.h, pos.x+(i*blockSize), pos.y-(j*blockSize), settings.width, settings.height);
+
+                        }
+                    }
+                    break;
+                case 5:
+                    // Block Custom Steps Right
+                    var numWide = nW;
+                    var numHigh = nH;
+                    var step = 0;
+                    for (var j = 0; j < numHigh; j++) {
+                        // ADD ROWS
+                        if(j > 0) step++;
+                        if(j > 0) numWide--;
+                        for (var i = 0; i < numWide; i++) {
+                            // ADD COLS
+                            if(i > step) sprite.draw(image.x,image.y, image.w, image.h, pos.x+(i*blockSize), pos.y-(j*blockSize), settings.width, settings.height);
+
+                        }
+                    }
+                    break;
+                default:
+                    sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+            }
         };
         return {
             image: image,
             settings: settings,
+            layout: layout,
             pos: pos,
             draw: draw
         };
@@ -246,8 +321,6 @@ $(document).ready(function () {
         var settings = {width: 81, height: 42};
         var draw = function(){
             sprite.draw(image.x,image.y, image.w, image.h, pos.x+pos.offsetx, pos.y+pos.offsety, settings.width, settings.height);
-            context.rect(image.x, image.y, image.w, image.h);
-            //context.drawImage(sprite, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
         };
         var move = function(){
             pos.offsetx -= moveSpeed+pos.speed;
@@ -274,9 +347,11 @@ $(document).ready(function () {
     var sprite = new Sprites();
     var coin = new Coin(20, 20);
     var heart = new Heart(20, 58);
-    var block1 = new Block(50, 200, 1);
-    var block2 = new Block(84, 200, 2);
-    var block3 = new Block(118, 200, 3);
+    var block1 = new Block(50, floorHeight-32,1,2,2,2);
+    console.log(block1.layout.width);
+    console.log(block1.layout.height);
+    //var block2 = new Block(84, floorHeight-32, 2,1);
+    //var block3 = new Block(118, floorHeight-32, 3,1);
 
     var clouds = [];
     var cloudCount = 4;
@@ -324,8 +399,8 @@ $(document).ready(function () {
         coin.draw();
         heart.draw();
         block1.draw();
-        block2.draw();
-        block3.draw();
+        //block2.draw();
+        //block3.draw();
         context.restore();
 
     }
