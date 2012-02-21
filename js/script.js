@@ -103,6 +103,8 @@ $(document).ready(function () {
     if("mozImageSmoothingEnabled" in context){
         context.mozImageSmoothingEnabled = false;
     }
+    var structures = [];
+    var blocks = [];
     var moveSpeed = 0.2;
     var blockSize = 32;
     var floorHeight = canvasHeight - 49;
@@ -111,7 +113,7 @@ $(document).ready(function () {
      * Objects
      */
 
-    var Sprites, Player, Enemy, Coin, Heart, Item, Cloud, Block;
+    var Sprites, Player, Enemy, Coin, Heart, Item, Cloud, Structure, Block;
 
     Sprites = function(){
         var sprite = [new Image(), false];
@@ -124,6 +126,12 @@ $(document).ready(function () {
         var draw = function(sx,sy, sWidth, sHeight, dx, dy, dWidth, dHeight){
             if(sprite[1]){
                 context.drawImage(sprite[0], sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+                if(debug){
+                    context.beginPath();
+                    context.strokeRect(dx, dy, dWidth, dHeight);
+                    context.strokeStyle = "#ff00d7";
+                    context.closePath();
+                }
             }
         };
 
@@ -212,7 +220,6 @@ $(document).ready(function () {
             draw: draw
         };
     };
-
     /**
      * Type: 1 = Brick
      *       2 = Metal
@@ -226,85 +233,108 @@ $(document).ready(function () {
      * @param x
      * @param y
      * @param type
+     * @param layout
+     * @param nW
+     * @param nH
      */
-    Block = function(x,y,type,layout,nW,nH){
+    Structure = function(x,y,type,layout,nW,nH){
+        var pos = {x:x,y:y};
+        var layout = {layout: layout, type: type, width: blockSize*nW, height:blockSize*nH};
+        switch(layout.layout){
+            case 1:
+                // Single Block
+                blocks.push(new Block(pos.x,pos.y,layout.type,this));
+                break;
+            case 2:
+                // Block Custom Solid
+                var numWide = nW;
+                var numHigh = nH;
+                for (var i = 0; i < numWide; i++) {
+                    // ADD ROWS
+                    for (var j = 0; j < numHigh; j++) {
+                        // ADD COLS
+                        blocks.push(new Block(pos.x+(i*blockSize),pos.y-(j*blockSize),layout.type,this));
+                    }
+                }
+                break;
+            case 3:
+                // Block Custom Steps Right
+                var numWide = nW;
+                var numHigh = nH;
+                var step = numWide;
+                for (var j = 0; j < numHigh; j++) {
+                    // ADD ROWS
+                    if(j > 0) numWide--;
+                    for (var i = 0; i < numWide; i++) {
+                        // ADD COLS
+                        blocks.push(new Block(pos.x+(i*blockSize),pos.y-(j*blockSize),layout.type,this));
+
+                    }
+                }
+                break;
+            case 4:
+                // Block Custom Steps Right
+                var numWide = nW;
+                var numHigh = nH;
+                var step = 0;
+                for (var j = 0; j < numHigh; j++) {
+                    // ADD ROWS
+                    if(j > 0) step++;
+                    for (var i = 0; i < numWide; i++) {
+                        // ADD COLS
+                        if(i > step) blocks.push(new Block(pos.x+(i*blockSize),pos.y-(j*blockSize),layout.type,this));
+
+                    }
+                }
+                break;
+            case 5:
+                // Block Custom Steps Right
+                var numWide = nW;
+                var numHigh = nH;
+                var step = 0;
+                for (var j = 0; j < numHigh; j++) {
+                    // ADD ROWS
+                    if(j > 0) step++;
+                    if(j > 0) numWide--;
+                    for (var i = 0; i < numWide; i++) {
+                        // ADD COLS
+                        if(i > step) blocks.push(new Block(pos.x+(i*blockSize),pos.y-(j*blockSize),layout.type,this));
+
+                    }
+                }
+                break;
+            default:
+                blocks.push(new Block(pos.x,pos.y,layout.type,this));
+        }
+        return {
+            pos: pos,
+            layout: layout,
+            draw: draw
+        };
+
+    };
+
+    /**
+     * Type: 1 = Brick
+     *       2 = Metal
+     *       3 = Glass
+     * @param x
+     * @param y
+     * @param type
+     * @param owner
+     */
+    Block = function(x,y,type, owner){
         var image = {x:80, y:(16*type), w: 16, h:16};
         var pos = {x:x,y:y};
-        var settings = {width: blockSize, height: blockSize, type: type};
-        var layout = {type: layout, width: blockSize*nW, height:blockSize*nH};
+        var settings = {width: blockSize, height: blockSize, type: type, owner: owner};
         var draw = function(){
-            switch(layout.type){
-                case 1:
-                    // Single Block
-                    sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
-                    break;
-                case 2:
-                    // Block Custom Solid
-                    var numWide = nW;
-                    var numHigh = nH;
-                    for (var i = 0; i < numWide; i++) {
-                        // ADD ROWS
-                        for (var j = 0; j < numHigh; j++) {
-                            // ADD COLS
-                            sprite.draw(image.x,image.y, image.w, image.h, pos.x+(i*blockSize), pos.y-(j*blockSize), settings.width, settings.height);
-                        }
-                    }
-                    break;
-                case 3:
-                    // Block Custom Steps Right
-                    var numWide = nW;
-                    var numHigh = nH;
-                    var step = numWide;
-                    for (var j = 0; j < numHigh; j++) {
-                        // ADD ROWS
-                        if(j > 0) numWide--;
-                        for (var i = 0; i < numWide; i++) {
-                            // ADD COLS
-                                sprite.draw(image.x,image.y, image.w, image.h, pos.x+(i*blockSize), pos.y-(j*blockSize), settings.width, settings.height);
-
-                        }
-                    }
-                    break;
-                case 4:
-                    // Block Custom Steps Right
-                    var numWide = nW;
-                    var numHigh = nH;
-                    var step = 0;
-                    for (var j = 0; j < numHigh; j++) {
-                        // ADD ROWS
-                        step++;
-                        for (var i = 0; i < numWide; i++) {
-                            // ADD COLS
-                            if(i > step) sprite.draw(image.x,image.y, image.w, image.h, pos.x+(i*blockSize), pos.y-(j*blockSize), settings.width, settings.height);
-
-                        }
-                    }
-                    break;
-                case 5:
-                    // Block Custom Steps Right
-                    var numWide = nW;
-                    var numHigh = nH;
-                    var step = 0;
-                    for (var j = 0; j < numHigh; j++) {
-                        // ADD ROWS
-                        if(j > 0) step++;
-                        if(j > 0) numWide--;
-                        for (var i = 0; i < numWide; i++) {
-                            // ADD COLS
-                            if(i > step) sprite.draw(image.x,image.y, image.w, image.h, pos.x+(i*blockSize), pos.y-(j*blockSize), settings.width, settings.height);
-
-                        }
-                    }
-                    break;
-                default:
-                    sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
-            }
+                // Single Block
+                sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
         };
         return {
             image: image,
-            settings: settings,
-            layout: layout,
             pos: pos,
+            settings: settings,
             draw: draw
         };
     };
@@ -347,9 +377,10 @@ $(document).ready(function () {
     var sprite = new Sprites();
     var coin = new Coin(20, 20);
     var heart = new Heart(20, 58);
-    var block1 = new Block(50, floorHeight-32,1,2,2,2);
-    console.log(block1.layout.width);
-    console.log(block1.layout.height);
+    structures.push(
+        new Structure(50, floorHeight-32,1,2,2,2)
+    );
+    console.log(blocks.length);
     //var block2 = new Block(84, floorHeight-32, 2,1);
     //var block3 = new Block(118, floorHeight-32, 3,1);
 
@@ -398,7 +429,10 @@ $(document).ready(function () {
         context.save();
         coin.draw();
         heart.draw();
-        block1.draw();
+        for(var i=0;i<blocks.length; i++){
+            var block = blocks[i];
+            block.draw();
+        }
         //block2.draw();
         //block3.draw();
         context.restore();
