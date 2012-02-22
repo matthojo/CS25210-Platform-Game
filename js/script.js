@@ -329,6 +329,7 @@ $(document).ready(function () {
         console.log();
         return {
             pos: pos,
+            id: id,
             layout: layout,
             draw: draw
         };
@@ -407,18 +408,24 @@ $(document).ready(function () {
     var coin = new Coin(20, 20);
     var heart = new Heart(20, 58);
 
-    function addStructure(){
+    function addRemoveStructures(){
         if(structures.length < structureCount && spacing == structureSpacing){
             var ranType = randomFromTo(1,3);
             var ranLayout = randomFromTo(1,5);
             var ranHeight = randomFromTo(1,4);
             var ranWidth = randomFromTo(1,8);
-            var structure1;
             structures.push(
                 new Structure(canvasWidth, floorHeight - 32, ranType, ranLayout, ranWidth, ranHeight)
             );
             spacing = -ranWidth*blockSize;
         } else spacing++;
+        if(structures.length >= structureCount){
+            for(var i=0;i<structures.length;i++){
+                var structure = structures[i];
+                if(structure.id.blockCount <= 0) structures.removeByValue(structure);
+                console.log("Removed");
+            }
+        }
     }
     console.log(blocks.length);
     //var block2 = new Block(84, floorHeight-32, 2,1);
@@ -469,15 +476,13 @@ $(document).ready(function () {
         context.save();
         coin.draw();
         heart.draw();
-        addStructure();
+        addRemoveStructures();
         for(var i=0;i<blocks.length; i++){
             var block = blocks[i];
             if(block){
                 block.draw();
                 if(!block.check()){
                     block.settings.owner.blockCount--;
-                    //if(block.settings.owner.blockCount == 0) structures.removeByValue(block.settings.owner);
-                    console.log(block.settings.owner);
                     blocks.removeByValue(block);
                 }
                 else block.move();
