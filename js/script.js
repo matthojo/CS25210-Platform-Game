@@ -104,9 +104,12 @@ $(document).ready(function () {
         context.mozImageSmoothingEnabled = false;
     }
     var structures = [];
+    var structureCount = 4;
     var blocks = [];
-    var moveSpeed = 0.2;
+    var moveSpeed = 1;
     var blockSize = 32;
+    var structureSpacing = 200;
+    var spacing = 200;
     var floorHeight = canvasHeight - 49;
 
     /**
@@ -220,6 +223,7 @@ $(document).ready(function () {
             draw: draw
         };
     };
+
     /**
      * Type: 1 = Brick
      *       2 = Metal
@@ -238,12 +242,19 @@ $(document).ready(function () {
      * @param nH
      */
     Structure = function(x,y,type,layout,nW,nH){
+        var ID = function (blockCount) {
+            var blockCount = blockCount;
+            return {
+                blockCount: blockCount
+            };
+        };
         var pos = {x:x,y:y};
-        var layout = {layout: layout, type: type, width: blockSize*nW, height:blockSize*nH};
+        var layout = {layout: layout, type: type, width: blockSize*nW, height:blockSize*nH, blockCount: 0};
+        var id = new ID(layout.blockCount);
         switch(layout.layout){
             case 1:
                 // Single Block
-                blocks.push(new Block(pos.x,pos.y,layout.type,this));
+                blocks.push(new Block(pos.x,pos.y,layout.type,id));
                 break;
             case 2:
                 // Block Custom Solid
@@ -253,7 +264,9 @@ $(document).ready(function () {
                     // ADD ROWS
                     for (var j = 0; j < numHigh; j++) {
                         // ADD COLS
-                        blocks.push(new Block(pos.x+(i*blockSize),pos.y-(j*blockSize),layout.type,this));
+                        if(nH >= 2){var offset = blockSize}
+                        blocks.push(new Block(pos.x+(i*blockSize),pos.y-((j*blockSize)+offset),layout.type,id));
+                        id.blockCount++;
                     }
                 }
                 break;
@@ -267,8 +280,8 @@ $(document).ready(function () {
                     if(j > 0) numWide--;
                     for (var i = 0; i < numWide; i++) {
                         // ADD COLS
-                        blocks.push(new Block(pos.x+(i*blockSize),pos.y-(j*blockSize),layout.type,this));
-
+                        blocks.push(new Block(pos.x+(i*blockSize),pos.y-(j*blockSize),layout.type,id));
+                        id.blockCount++;
                     }
                 }
                 break;
@@ -282,7 +295,10 @@ $(document).ready(function () {
                     if(j > 0) step++;
                     for (var i = 0; i < numWide; i++) {
                         // ADD COLS
-                        if(i > step) blocks.push(new Block(pos.x+(i*blockSize),pos.y-(j*blockSize),layout.type,this));
+                        if(i > step){
+                            blocks.push(new Block(pos.x+(i*blockSize),pos.y-(j*blockSize),layout.type,id));
+                            id.blockCount++;
+                        }
 
                     }
                 }
@@ -298,14 +314,19 @@ $(document).ready(function () {
                     if(j > 0) numWide--;
                     for (var i = 0; i < numWide; i++) {
                         // ADD COLS
-                        if(i > step) blocks.push(new Block(pos.x+(i*blockSize),pos.y-(j*blockSize),layout.type,this));
+                        if(i > step){
+                            blocks.push(new Block(pos.x+(i*blockSize),pos.y-(j*blockSize),layout.type,id));
+                            id.blockCount++;
+                        }
 
                     }
                 }
                 break;
             default:
-                blocks.push(new Block(pos.x,pos.y,layout.type,this));
+                blocks.push(new Block(pos.x,pos.y,layout.type,id));
+                id.blockCount++;
         }
+        console.log();
         return {
             pos: pos,
             layout: layout,
@@ -331,11 +352,19 @@ $(document).ready(function () {
                 // Single Block
                 sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
         };
+        var checkEdge = function () {
+            return !(pos.x <= 0-settings.width ||  pos.y <= 0-settings.height);
+        };
+        var move = function(){
+            pos.x -= moveSpeed;
+        };
         return {
             image: image,
             pos: pos,
             settings: settings,
-            draw: draw
+            draw: draw,
+            check: checkEdge,
+            move: move
         };
     };
 
@@ -347,13 +376,13 @@ $(document).ready(function () {
         }else{
             image.y = 0
         }
-        var pos = {x:x,y:y, offsetx:0, offsety:0, speed: 0};
+        var pos = {x:x,y:y, offsetx:0, offsety:0, speed: 0.2};
         var settings = {width: 81, height: 42};
         var draw = function(){
             sprite.draw(image.x,image.y, image.w, image.h, pos.x+pos.offsetx, pos.y+pos.offsety, settings.width, settings.height);
         };
         var move = function(){
-            pos.offsetx -= moveSpeed+pos.speed;
+            pos.offsetx -= pos.speed;
             if((pos.x+pos.offsetx+settings.width) <= 0){
                 pos.offsetx += canvasWidth+settings.width;
                 pos.offsety = randomFromTo(-42, 42);
@@ -377,9 +406,20 @@ $(document).ready(function () {
     var sprite = new Sprites();
     var coin = new Coin(20, 20);
     var heart = new Heart(20, 58);
-    structures.push(
-        new Structure(50, floorHeight-32,1,2,2,2)
-    );
+
+    function addStructure(){
+        if(structures.length < structureCount && spacing == structureSpacing){
+            var ranType = randomFromTo(1,3);
+            var ranLayout = randomFromTo(1,5);
+            var ranHeight = randomFromTo(1,4);
+            var ranWidth = randomFromTo(1,8);
+            var structure1;
+            structures.push(
+                new Structure(canvasWidth, floorHeight - 32, ranType, ranLayout, ranWidth, ranHeight)
+            );
+            spacing = -ranWidth*blockSize;
+        } else spacing++;
+    }
     console.log(blocks.length);
     //var block2 = new Block(84, floorHeight-32, 2,1);
     //var block3 = new Block(118, floorHeight-32, 3,1);
@@ -429,15 +469,24 @@ $(document).ready(function () {
         context.save();
         coin.draw();
         heart.draw();
+        addStructure();
         for(var i=0;i<blocks.length; i++){
             var block = blocks[i];
-            block.draw();
+            if(block){
+                block.draw();
+                if(!block.check()){
+                    block.settings.owner.blockCount--;
+                    //if(block.settings.owner.blockCount == 0) structures.removeByValue(block.settings.owner);
+                    console.log(block.settings.owner);
+                    blocks.removeByValue(block);
+                }
+                else block.move();
+            }
         }
-        //block2.draw();
-        //block3.draw();
+
         context.restore();
 
-    }
+    };
 
     /**
      * End the game
