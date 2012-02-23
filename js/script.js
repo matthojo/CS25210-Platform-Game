@@ -96,6 +96,7 @@ $(document).ready(function () {
      */
     var uiStart = $(".start"), uiPause = $(".paused"), uiOver = $(".gameOver"), playButton = $(".playGame");
     //sprite.src = '/img/sprite.gif'; // Set source path
+    var stats;
 
     /**
      * Game UI Settings
@@ -116,7 +117,7 @@ $(document).ready(function () {
      * Objects
      */
 
-    var Sprites, Player, Enemy, Coin, Heart, Item, Cloud, Structure, Block;
+    var Sprites, Player, Coin, Heart, Item, Cloud, Structure, Block;
 
     Sprites = function(){
         var sprite = [new Image(), false];
@@ -228,6 +229,23 @@ $(document).ready(function () {
             draw: draw
         };
     };
+
+    Item = function(x,y){
+        var image = {x:16, y:17, w: 16, h:16};
+        var pos = {x:x,y:y};
+        var settings = {width: 32, height: 32};
+        var draw = function(){
+            sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+        };
+        return {
+            image: image,
+            settings: settings,
+            pos: pos,
+            draw: draw
+        };
+    };
+
+
 
     /**
      * Type: 1 = Brick
@@ -524,9 +542,9 @@ $(document).ready(function () {
      */
     function debugMode() {
 
-        if(!debug){
-
-            var stats = new Stats();
+        debug = !debug;
+        if (!stats) {
+            stats = new Stats();
 
             // Align top-left
             stats.getDomElement().style.position = 'absolute';
@@ -537,8 +555,6 @@ $(document).ready(function () {
             setInterval(function () {
                 stats.update();
             }, 1000 / 60);
-            debug = true;
-
         }
     }
 
