@@ -250,11 +250,12 @@ $(document).ready(function () {
         };
         var pos = {x:x,y:y};
         var layout = {layout: layout, type: type, width: blockSize*nW, height:blockSize*nH, blockCount: 0};
-        var id = new ID(layout.blockCount);
+        var id = new ID(1);
         switch(layout.layout){
             case 1:
                 // Single Block
                 blocks.push(new Block(pos.x,pos.y,layout.type,id));
+                layout.blockCount++;
                 break;
             case 2:
                 // Block Custom Solid
@@ -266,9 +267,10 @@ $(document).ready(function () {
                         // ADD COLS
                         if(nH >= 2){var offset = blockSize}
                         blocks.push(new Block(pos.x+(i*blockSize),pos.y-((j*blockSize)+offset),layout.type,id));
-                        id.blockCount++;
+                        layout.blockCount++;
                     }
                 }
+                id.blockCount = layout.blockCount;
                 break;
             case 3:
                 // Block Custom Steps Right
@@ -281,9 +283,10 @@ $(document).ready(function () {
                     for (var i = 0; i < numWide; i++) {
                         // ADD COLS
                         blocks.push(new Block(pos.x+(i*blockSize),pos.y-(j*blockSize),layout.type,id));
-                        id.blockCount++;
+                        layout.blockCount++;
                     }
                 }
+                id.blockCount = layout.blockCount;
                 break;
             case 4:
                 // Block Custom Steps Right
@@ -297,11 +300,12 @@ $(document).ready(function () {
                         // ADD COLS
                         if(i > step){
                             blocks.push(new Block(pos.x+(i*blockSize),pos.y-(j*blockSize),layout.type,id));
-                            id.blockCount++;
+                            layout.blockCount++;
                         }
 
                     }
                 }
+                id.blockCount = layout.blockCount;
                 break;
             case 5:
                 // Block Custom Steps Right
@@ -316,17 +320,17 @@ $(document).ready(function () {
                         // ADD COLS
                         if(i > step){
                             blocks.push(new Block(pos.x+(i*blockSize),pos.y-(j*blockSize),layout.type,id));
-                            id.blockCount++;
+                            layout.blockCount++;
                         }
 
                     }
                 }
+                id.blockCount = layout.blockCount;
                 break;
             default:
                 blocks.push(new Block(pos.x,pos.y,layout.type,id));
-                id.blockCount++;
+                layout.blockCount++;
         }
-        console.log();
         return {
             pos: pos,
             id: id,
@@ -352,6 +356,10 @@ $(document).ready(function () {
         var draw = function(){
                 // Single Block
                 sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+                if(debug){
+                    context.font = "20px 800 Arial";
+                    context.fillText(type, pos.x+4, pos.y+10);
+                }
         };
         var checkEdge = function () {
             return !(pos.x <= 0-settings.width ||  pos.y <= 0-settings.height);
@@ -410,10 +418,10 @@ $(document).ready(function () {
 
     function addRemoveStructures(){
         if(structures.length < structureCount && spacing == structureSpacing){
-            var ranType = randomFromTo(1,3);
+            var ranType = randomFromTo(1,2);
             var ranLayout = randomFromTo(1,5);
             var ranHeight = randomFromTo(1,4);
-            var ranWidth = randomFromTo(1,8);
+            var ranWidth = randomFromTo(1,4);
             structures.push(
                 new Structure(canvasWidth, floorHeight - 32, ranType, ranLayout, ranWidth, ranHeight)
             );
@@ -423,7 +431,7 @@ $(document).ready(function () {
             for(var i=0;i<structures.length;i++){
                 var structure = structures[i];
                 if(structure.id.blockCount <= 0) structures.removeByValue(structure);
-                console.log("Removed");
+                console.log("Removed Structure "+i);
             }
         }
     }
