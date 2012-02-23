@@ -278,23 +278,27 @@ $(document).ready(function () {
                 id.blockCount = layout.blockCount;
                 break;
             case 3:
-                // Block Custom Steps Right
+                // Block Custom Steps Both
                 var numWide = nW;
                 var numHigh = nH;
-                var step = numWide;
+                var step = 0;
                 for (var j = 0; j < numHigh; j++) {
                     // ADD ROWS
+                    if(j > 0) step++;
                     if(j > 0) numWide--;
                     for (var i = 0; i < numWide; i++) {
                         // ADD COLS
-                        blocks.push(new Block(pos.x+(i*blockSize),pos.y-(j*blockSize),layout.type,id));
-                        layout.blockCount++;
+                        if(i > step){
+                            blocks.push(new Block(pos.x+(i*blockSize),pos.y-(j*blockSize),layout.type,id));
+                            layout.blockCount++;
+                        }
+
                     }
                 }
                 id.blockCount = layout.blockCount;
                 break;
             case 4:
-                // Block Custom Steps Right
+                // Block Custom Steps Left
                 var numWide = nW;
                 var numHigh = nH;
                 var step = 0;
@@ -316,18 +320,14 @@ $(document).ready(function () {
                 // Block Custom Steps Right
                 var numWide = nW;
                 var numHigh = nH;
-                var step = 0;
+                var step = numWide;
                 for (var j = 0; j < numHigh; j++) {
                     // ADD ROWS
-                    if(j > 0) step++;
                     if(j > 0) numWide--;
                     for (var i = 0; i < numWide; i++) {
                         // ADD COLS
-                        if(i > step){
-                            blocks.push(new Block(pos.x+(i*blockSize),pos.y-(j*blockSize),layout.type,id));
-                            layout.blockCount++;
-                        }
-
+                        blocks.push(new Block(pos.x+(i*blockSize),pos.y-(j*blockSize),layout.type,id));
+                        layout.blockCount++;
                     }
                 }
                 id.blockCount = layout.blockCount;
@@ -492,7 +492,7 @@ $(document).ready(function () {
     function addRemoveStructures(){
         if(structures.length < structureCount && spacing == structureSpacing){
             var ranType = randomFromTo(1,2);
-            var ranLayout = randomFromTo(1,5);
+            var ranLayout = randomFromTo(1,4);
             var ranHeight = randomFromTo(1,4);
             var ranWidth = randomFromTo(1,4);
             structures.push(
