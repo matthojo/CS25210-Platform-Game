@@ -132,6 +132,7 @@ $(document).ready(function () {
                 if(debug){
                     context.beginPath();
                     context.strokeRect(dx, dy, dWidth, dHeight);
+                    context.lineWidth = 1;
                     context.strokeStyle = "#ff00d7";
                     context.closePath();
                 }
@@ -176,6 +177,9 @@ $(document).ready(function () {
                     sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
             }
         };
+        var checkEdge = function () {
+            return !(pos.x <= 0-settings.width ||  pos.y <= 0-settings.height);
+        };
         var move = function(direction){
             pos.offsetx -= moveSpeed;
             if((pos.x+pos.offsetx+settings.width) <= 0){
@@ -190,6 +194,7 @@ $(document).ready(function () {
             settings: settings,
             pos: pos,
             draw: draw,
+            check: checkEdge,
             move: move
         };
     };
@@ -416,28 +421,7 @@ $(document).ready(function () {
     var coin = new Coin(20, 20);
     var heart = new Heart(20, 58);
 
-    function addRemoveStructures(){
-        if(structures.length < structureCount && spacing == structureSpacing){
-            var ranType = randomFromTo(1,2);
-            var ranLayout = randomFromTo(1,5);
-            var ranHeight = randomFromTo(1,4);
-            var ranWidth = randomFromTo(1,4);
-            structures.push(
-                new Structure(canvasWidth, floorHeight - 32, ranType, ranLayout, ranWidth, ranHeight)
-            );
-            spacing = -ranWidth*blockSize;
-        } else spacing++;
-        if(structures.length >= structureCount){
-            for(var i=0;i<structures.length;i++){
-                var structure = structures[i];
-                if(structure.id.blockCount <= 0) structures.removeByValue(structure);
-                console.log("Removed Structure "+i);
-            }
-        }
-    }
     console.log(blocks.length);
-    //var block2 = new Block(84, floorHeight-32, 2,1);
-    //var block3 = new Block(118, floorHeight-32, 3,1);
 
     var clouds = [];
     var cloudCount = 4;
@@ -499,7 +483,33 @@ $(document).ready(function () {
 
         context.restore();
 
-    };
+    }
+
+    /**
+     * Adds structures if less that specified count.
+     * Removes structures if they contain no blocks.
+     */
+    function addRemoveStructures(){
+        if(structures.length < structureCount && spacing == structureSpacing){
+            var ranType = randomFromTo(1,2);
+            var ranLayout = randomFromTo(1,5);
+            var ranHeight = randomFromTo(1,4);
+            var ranWidth = randomFromTo(1,4);
+            structures.push(
+                new Structure(canvasWidth, floorHeight - 32, ranType, ranLayout, ranWidth, ranHeight)
+            );
+            spacing = -ranWidth*blockSize;
+        } else spacing++;
+        if(structures.length >= structureCount){
+            for(var i=0;i<structures.length;i++){
+                var structure = structures[i];
+                if(structure.id.blockCount <= 0){
+                    structures.removeByValue(structure);
+                    console.log("Removed Structure "+i);
+                }
+            }
+        }
+    }
 
     /**
      * End the game
