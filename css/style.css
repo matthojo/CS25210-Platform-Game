@@ -1291,7 +1291,6 @@ body {
     line-height: 18px;
     color: #333333;
     background-color: #F6F7F8;
-    overflow: hidden;
 }
 a {
     color: #0088cc;
@@ -1308,11 +1307,6 @@ canvas {
     margin-top: 40px;
     margin-bottom: 20px;
     background: url('../img/background.gif') left top repeat-x;
-    image-rendering: optimizeSpeed !important;
-    image-rendering: -moz-crisp-edges !important;
-    image-rendering: -webkit-optimize-contrast !important;
-    image-rendering: optimize-contrast !important;
-    -ms-interpolation-mode :nearest-neighbor !important;
 }
 audio .sound{display: none;}
 
@@ -1321,8 +1315,21 @@ audio .sound{display: none;}
     width: 400px;
     margin: 0 auto;
 }
-.content h1.title{
+.content .title{
     text-align: center;
+}
+.higherContent{
+    padding-top: 40px;
+}
+.logo{
+    background: url("../img/logoWhite.png") no-repeat top left;
+    text-indent: -9999px;
+    height: 50px;
+    width: 270px;
+    margin: 0 auto 10px;
+}
+.logoBlack{
+    background: url("../img/logoBlack.png") no-repeat top left;
 }
 .menu{
     position: absolute;
@@ -1330,7 +1337,7 @@ audio .sound{display: none;}
     font-size: 24px;
     width: 400px;
     left: 50%;
-    top:  300px;
+    top:  340px;
     margin-left: -200px;
     margin-top: -200px;
     color: #FFF;
@@ -1390,20 +1397,22 @@ audio .sound{display: none;}
 }
 .menu.paused{
     font-size: 30px;
+    text-transform: uppercase;
     text-align: center;
 }
 .menu.paused h1{
     display: block;
+    font-weight: normal;
     color: #FFF;
 }
 .menu.gameOver h1{
     text-transform: uppercase;
+    font-weight: normal;
     font-size: 30px;
 }
 .menu.gameOver .scoreIt{
     color: #FFF;
     font-size: 28px;
-    font-weight: bold;
     margin-bottom: 20px;
 }
 .menu.gameOver .newHighScore{
