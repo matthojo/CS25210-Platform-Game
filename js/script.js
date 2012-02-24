@@ -154,40 +154,44 @@ $(document).ready(function () {
      * @param y
      */
     Player = function(x,y){
-        var image = {x:16, y:0, w: 16, h:16};
-        var pos = {x:x,y:y};
-        var settings = {width: 32, height: 32, health: 100, status: 0, lives: 3};
+        var image = {x:96, y:0, w: 17, h:44};
+        var pos = {x:x,y:y,offsetY:0};
+        var settings = {width: 34, height: 88, health: 100, status: 0, lives: 3, jumpHeight:34, jumpSpeed: 2};
         var draw = function(){
             switch(settings.status){
                 case 0:
-                    sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+                    sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
                     break;
                 case 1:
-                    sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+                    sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
 
                     break;
                 case 2:
-                    sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+                    sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
 
                      break;
                 case 3:
-                    sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+                    sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
 
                     break;
                 default:
-                    sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+                    sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
             }
         };
         var checkEdge = function () {
-            return !(pos.x <= 0-settings.width ||  pos.y <= 0-settings.height);
+            for(var i=0;i<blocks.length;i++){
+                var block = blocks[i];
+                if (player.pos.y - pos.offsetY == block.pos.y-blockSize && player.pos.x == (block.pos.x  - block.pos.x/2  || block.pos.x + block.pos.x/2 ) ) {
+                    return true;
+                }
+            }
         };
-        var move = function(direction){
-            pos.offsetx -= moveSpeed;
-            if((pos.x+pos.offsetx+settings.width) <= 0){
-                pos.offsetx += canvasWidth+settings.width;
-                pos.offsety = randomFromTo(-42, 42);
-                if(pos.offsety+pos.y < 0) pos.offsety = 0;
-
+        var move = function(){
+            if(settings.status == 2){
+                if(pos.offsetY < settings.jumpHeight) pos.offsetY+= settings.jumpSpeed;
+                else settings.status = 1;
+            }else if(pos.offsetY > 0 && !checkEdge()){
+                 pos.offsetY-= settings.jumpSpeed;
             }
         };
         return {
@@ -254,9 +258,9 @@ $(document).ready(function () {
      * Layout:
      *      1 = Single Block
      *      2 = Solid Block
-     *      3 = Stair Right
+     *      3 = Stairs Both Sides
      *      4 = Stair Left
-     *      5 = Stairs Both Sides
+     *      5 = Stair Right
      * @param x
      * @param y
      * @param type
@@ -436,6 +440,7 @@ $(document).ready(function () {
      * Create object instances
      */
     var sprite = new Sprites();
+    var player = new Player(100, floorHeight - 88);
     var coin = new Coin(20, 20);
     var heart = new Heart(20, 58);
 
@@ -467,12 +472,14 @@ $(document).ready(function () {
         if (leftKey) {
         }
         if (upKey) {
+            if(player.pos.offsetY == 0) player.settings.status = 2;
         }
         if(downKey){
         }
         if(space){
+            if(player.pos.offsetY == 0) player.settings.status = 2;
         }
-
+        player.move();
 
         //Draw Clouds
         context.save();
@@ -484,8 +491,11 @@ $(document).ready(function () {
         context.restore();
 
         context.save();
+        player.draw();
         coin.draw();
         heart.draw();
+        context.restore();
+        context.save();
         addRemoveStructures();
         for(var i=0;i<blocks.length; i++){
             var block = blocks[i];
