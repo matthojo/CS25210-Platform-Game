@@ -159,7 +159,7 @@ $(document).ready(function () {
         var imageJump = {x:96, y:44, w: 29, h:40};
         var imageSlide = {x:96, y:0, w: 17, h:44};
         var pos = {x:x,y:y,offsetY:0};
-        var settings = {width: 34, height: 88, health: 100, status: 0, lives: 3, jumpHeight:0, maxJumpHeight:34, jumpSpeed: 4, jumping: false};
+        var settings = {width: 34, height: 88, health: 100, energy: 100, energyRegen: 5, status: 0, lives: 3, jumpHeight:0, maxJumpHeight:34, jumpSpeed: 4, jumping: false};
         var draw = function(){
             switch(settings.status){
                 case 0:
@@ -182,6 +182,24 @@ $(document).ready(function () {
                     sprite.draw(imageStill.x,imageStill.y, imageStill.w, imageStill.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
             }
         };
+        var drawStats = function(){
+            context.strokeStyle = "rgba(76, 76, 76, 0.500)";
+            context.font = "14px 800 Arial";
+
+            //Labels
+            context.fillText("Health", player.pos.x-34, player.pos.y-(pos.offsetY+25));
+            context.fillText("Energy", player.pos.x-34, player.pos.y-(pos.offsetY+15));
+
+            //Health
+            context.fillStyle = "#41b75f";
+            context.roundRect(player.pos.x, player.pos.y-(pos.offsetY+30), player.settings.health/2, 5, 2, true, false);
+            context.roundRect(player.pos.x, player.pos.y-(pos.offsetY+30), 50, 5, 2, false, true);
+
+            //Energy
+            context.fillStyle = "#3b7afa";
+            context.roundRect(player.pos.x, player.pos.y-(pos.offsetY+20), player.settings.energy/2, 5, 2, true, false);
+            context.roundRect(player.pos.x, player.pos.y-(pos.offsetY+20), 50, 5, 2, false, true);
+        };
         var checkEdge = function (edge) {
             var connect = false;
             switch(edge){
@@ -202,24 +220,29 @@ $(document).ready(function () {
 
         };
         var move = function(){
-            if(settings.jumping){
+            if(settings.jumping && settings.energy > 70){
                 if(settings.jumpHeight < settings.maxJumpHeight){
                     pos.offsetY+= settings.jumpSpeed;
                     settings.jumpHeight += settings.jumpSpeed;
                     settings.status = 2;
                 }else{
                     settings.jumping = false;
+                    if(settings.energy > 0) settings.energy-=50;
                 }
             }else if(pos.offsetY > 0 && checkEdge(1)){
                 settings.jumpHeight = 0;
                 settings.status = 1;
+                if(settings.energy < 100) settings.energy+=settings.energyRegen;
             }
             else if(pos.offsetY > 0 && !checkEdge(1)){
                 pos.offsetY-= settings.jumpSpeed;
                 settings.jumpHeight -= settings.jumpSpeed;
+                if(settings.energy < 100) settings.energy+=settings.energyRegen;
             }else if(pos.offsetY == 0){
                 settings.jumping = false;
+                settings.jumpHeight = 0;
                 settings.status = 1;
+                if(settings.energy < 100) settings.energy+=settings.energyRegen;
             }
         };
         return {
@@ -230,6 +253,7 @@ $(document).ready(function () {
             settings: settings,
             pos: pos,
             draw: draw,
+            drawStats: drawStats,
             check: checkEdge,
             move: move
         };
@@ -377,9 +401,10 @@ $(document).ready(function () {
                 for (var j = 0; j < numHigh; j++) {
                     // ADD ROWS
                     if(j > 0) numWide--;
+                    if(nH >= 2){var offset = blockSize}
                     for (var i = 0; i < numWide; i++) {
                         // ADD COLS
-                        blocks.push(new Block(pos.x+(i*blockSize),pos.y-(j*blockSize),layout.type,id));
+                        blocks.push(new Block(pos.x+(i*blockSize),pos.y-((j*blockSize)+offset),layout.type,id));
                         layout.blockCount++;
                     }
                 }
@@ -408,15 +433,18 @@ $(document).ready(function () {
      * @param owner
      */
     Block = function(x,y,type, owner){
+        if(!type){
+            type = 1;
+        }
         var image = {x:80, y:(16*type), w: 16, h:16};
         var pos = {x:x,y:y};
         var settings = {width: blockSize, height: blockSize, type: type, owner: owner};
         var draw = function(){
                 // Single Block
                 sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
-                if(debug){
+                if(debug && settings.type){
                     context.font = "20px 800 Arial";
-                    context.fillText(type, pos.x+4, pos.y+10);
+                    context.fillText(settings.type, pos.x+4, pos.y+10);
                 }
         };
         var checkEdge = function () {
@@ -503,14 +531,20 @@ $(document).ready(function () {
         if (leftKey) {
         }
         if (upKey) {
-            player.settings.jumping = true;
+            if(player.settings.jumpHeight == 0 && player.settings.energy == 100) player.settings.jumping = true;
         }
         if(downKey){
         }
         if(space){
-            player.settings.jumping = true;
+            if(player.settings.jumpHeight == 0) player.settings.jumping = true;
         }
         player.move();
+
+        if(debug){
+            context.save();
+            player.drawStats();
+            context.restore();
+        }
 
         //Draw Clouds
         context.save();
@@ -526,6 +560,7 @@ $(document).ready(function () {
         coin.draw();
         heart.draw();
         context.restore();
+
         context.save();
         addRemoveStructures();
         for(var i=0;i<blocks.length; i++){
@@ -539,7 +574,6 @@ $(document).ready(function () {
                 else block.move();
             }
         }
-
         context.restore();
 
     }
@@ -557,6 +591,7 @@ $(document).ready(function () {
             structures.push(
                 new Structure(canvasWidth, floorHeight-32, ranType, ranLayout, ranWidth, ranHeight)
             );
+            console.log("Added Structure "+ranLayout);
             spacing = -ranWidth*blockSize;
         } else spacing++;
         if(structures.length >= structureCount){
@@ -577,6 +612,34 @@ $(document).ready(function () {
         playGame = false;
         gameOver = true;
     }
+
+    CanvasRenderingContext2D.prototype.roundRect =
+
+        function(x, y, width, height, radius, fill, stroke) {
+            if (typeof stroke == "undefined" ) {
+                stroke = true;
+            }
+            if (typeof radius === "undefined") {
+                radius = 5;
+            }
+            this.beginPath();
+            this.moveTo(x + radius, y);
+            this.lineTo(x + width - radius, y);
+            this.quadraticCurveTo(x + width, y, x + width, y + radius);
+            this.lineTo(x + width, y + height - radius);
+            this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            this.lineTo(x + radius, y + height);
+            this.quadraticCurveTo(x, y + height, x, y + height - radius);
+            this.lineTo(x, y + radius);
+            this.quadraticCurveTo(x, y, x + radius, y);
+            this.closePath();
+            if (stroke) {
+                this.stroke();
+            }
+            if (fill) {
+                this.fill();
+            }
+        }
 
     /**
      * Turn on debug options and display FPS
