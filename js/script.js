@@ -154,48 +154,79 @@ $(document).ready(function () {
      * @param y
      */
     Player = function(x,y){
-        var image = {x:96, y:0, w: 17, h:44};
+        var imageStill = {x:96, y:0, w: 17, h:44};
+        var imageRunning = {x:96, y:0, w: 17, h:44};
+        var imageJump = {x:96, y:44, w: 29, h:40};
+        var imageSlide = {x:96, y:0, w: 17, h:44};
         var pos = {x:x,y:y,offsetY:0};
-        var settings = {width: 34, height: 88, health: 100, status: 0, lives: 3, jumpHeight:34, jumpSpeed: 2};
+        var settings = {width: 34, height: 88, health: 100, status: 0, lives: 3, jumpHeight:0, maxJumpHeight:34, jumpSpeed: 4, jumping: false};
         var draw = function(){
             switch(settings.status){
                 case 0:
-                    sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
+                    settings.width = imageStill.w*2;
+                    sprite.draw(imageStill.x,imageStill.y, imageStill.w, imageStill.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
                     break;
                 case 1:
-                    sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
-
+                    settings.width = imageRunning.w*2;
+                    sprite.draw(imageRunning.x,imageRunning.y, imageRunning.w, imageRunning.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
                     break;
                 case 2:
-                    sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
-
+                    settings.width = imageJump.w*2;
+                    sprite.draw(imageJump.x,imageJump.y, imageJump.w, imageJump.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
                      break;
                 case 3:
-                    sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
-
+                    sprite.draw(imageSlide.x,imageSlide.y, imageSlide.w, imageSlide.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
                     break;
                 default:
-                    sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
+                    settings.width = imageStill.w*2;
+                    sprite.draw(imageStill.x,imageStill.y, imageStill.w, imageStill.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
             }
         };
-        var checkEdge = function () {
-            for(var i=0;i<blocks.length;i++){
-                var block = blocks[i];
-                if (player.pos.y - pos.offsetY == block.pos.y-blockSize && player.pos.x == (block.pos.x  - block.pos.x/2  || block.pos.x + block.pos.x/2 ) ) {
-                    return true;
-                }
+        var checkEdge = function (edge) {
+            var connect = false;
+            switch(edge){
+                case 1:
+                    // Top
+                    for(var i=0;i<blocks.length;i++){
+                        var block = blocks[i];
+                        if ((pos.y-pos.offsetY)+settings.height == block.pos.y && block.pos.x-pos.x < settings.width && block.pos.x+block.settings.width > pos.x){
+                            connect = true;
+                            console.log("Contact!");
+                        }
+                    }
+                    break;
+                case 2:
+                    // Left edge
             }
+            return connect;
+
         };
         var move = function(){
-            if(settings.status == 2){
-                if(pos.offsetY < settings.jumpHeight) pos.offsetY+= settings.jumpSpeed;
-                else settings.status = 1;
-            }else if(pos.offsetY > 0 && !checkEdge()){
-                 pos.offsetY-= settings.jumpSpeed;
+            if(settings.jumping){
+                if(settings.jumpHeight < settings.maxJumpHeight){
+                    pos.offsetY+= settings.jumpSpeed;
+                    settings.jumpHeight += settings.jumpSpeed;
+                    settings.status = 2;
+                }else{
+                    settings.jumping = false;
+                }
+            }else if(pos.offsetY > 0 && checkEdge(1)){
+                settings.jumpHeight = 0;
+                settings.status = 1;
+            }
+            else if(pos.offsetY > 0 && !checkEdge(1)){
+                pos.offsetY-= settings.jumpSpeed;
+                settings.jumpHeight -= settings.jumpSpeed;
+            }else if(pos.offsetY == 0){
+                settings.jumping = false;
+                settings.status = 1;
             }
         };
         return {
-            image: image,
+            imageStill: imageStill,
+            imageRunning: imageRunning,
+            imageJump: imageJump,
+            imageSlide: imageSlide,
             settings: settings,
             pos: pos,
             draw: draw,
@@ -472,12 +503,12 @@ $(document).ready(function () {
         if (leftKey) {
         }
         if (upKey) {
-            if(player.pos.offsetY == 0) player.settings.status = 2;
+            player.settings.jumping = true;
         }
         if(downKey){
         }
         if(space){
-            if(player.pos.offsetY == 0) player.settings.status = 2;
+            player.settings.jumping = true;
         }
         player.move();
 
@@ -524,7 +555,7 @@ $(document).ready(function () {
             var ranHeight = randomFromTo(1,4);
             var ranWidth = randomFromTo(1,4);
             structures.push(
-                new Structure(canvasWidth, floorHeight - 32, ranType, ranLayout, ranWidth, ranHeight)
+                new Structure(canvasWidth, floorHeight-32, ranType, ranLayout, ranWidth, ranHeight)
             );
             spacing = -ranWidth*blockSize;
         } else spacing++;
