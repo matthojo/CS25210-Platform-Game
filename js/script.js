@@ -166,27 +166,27 @@ $(document).ready(function () {
                 case 0:
                     settings.width = imageStill.w * 2;
                     settings.height = imageStill.h * 2;
-                    sprite.draw(imageStill.x, imageStill.y, imageStill.w, imageStill.h, pos.x - settings.width+ pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
+                    sprite.draw(imageStill.x, imageStill.y, imageStill.w, imageStill.h, pos.x - settings.width + pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
                     break;
                 case 1:
                     settings.width = imageRunning.w * 2;
                     settings.height = imageStill.h * 2;
-                    sprite.draw(imageRunning.x, imageRunning.y, imageRunning.w, imageRunning.h, pos.x - settings.width+ pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
+                    sprite.draw(imageRunning.x, imageRunning.y, imageRunning.w, imageRunning.h, pos.x - settings.width + pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
                     break;
                 case 2:
                     settings.width = imageJump.w * 2;
                     settings.height = imageStill.h * 2;
-                    sprite.draw(imageJump.x, imageJump.y, imageJump.w, imageJump.h, pos.x- settings.width+ pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
+                    sprite.draw(imageJump.x, imageJump.y, imageJump.w, imageJump.h, pos.x - settings.width + pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
                     break;
                 case 3:
                     settings.width = imageSlide.w * 2;
                     settings.height = imageSlide.h * 2;
-                    sprite.draw(imageSlide.x, imageSlide.y, imageSlide.w, imageSlide.h, pos.x- settings.width+ pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
+                    sprite.draw(imageSlide.x, imageSlide.y, imageSlide.w, imageSlide.h, pos.x - settings.width + pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
                     break;
                 default:
                     settings.width = imageStill.w * 2;
                     settings.height = imageStill.h * 2;
-                    sprite.draw(imageStill.x, imageStill.y, imageStill.w, imageStill.h, pos.x- settings.width+ pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
+                    sprite.draw(imageStill.x, imageStill.y, imageStill.w, imageStill.h, pos.x - settings.width + pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
             }
         };
         var drawStats = function () {
@@ -214,7 +214,7 @@ $(document).ready(function () {
                     // Top
                     for (var i = 0; i < blocks.length; i++) {
                         var block = blocks[i];
-                        if ((pos.y - pos.offsetY) == block.pos.y && (pos.x + pos.offsetX) >= block.pos.x && block.pos.x - pos.x-settings.width+pos.offsetX < settings.width && block.pos.x + block.settings.width > pos.x-settings.width+pos.offsetX) {
+                        if ((pos.y - pos.offsetY) == block.pos.y && (pos.x + pos.offsetX) >= block.pos.x && block.pos.x - pos.x - settings.width + pos.offsetX < settings.width && block.pos.x + block.settings.width > pos.x - settings.width + pos.offsetX) {
                             connect = 1;
                         }
                     }
@@ -223,7 +223,7 @@ $(document).ready(function () {
                     // Left edge
                     for (var i = 0; i < blocks.length; i++) {
                         var block = blocks[i];
-                        if ((pos.x + pos.offsetX) == block.pos.x && block.pos.y+block.settings.height > pos.y-settings.height-pos.offsetY && block.pos.y - (pos.y-settings.height-pos.offsetY) < settings.height-4) {
+                        if ((pos.x + pos.offsetX) == block.pos.x && block.pos.y + block.settings.height > pos.y - settings.height - pos.offsetY && block.pos.y - (pos.y - settings.height - pos.offsetY) < settings.height - 4) {
                             connect = 2;
                         }
                     }
@@ -232,7 +232,7 @@ $(document).ready(function () {
                     // Bottom
                     for (var i = 0; i < blocks.length; i++) {
                         var block = blocks[i];
-                        if ((pos.y-settings.height- pos.offsetY) == block.pos.y+block.settings.height && (pos.x + pos.offsetX) >= block.pos.x && block.pos.x - pos.x- settings.width+ pos.offsetX < settings.width && block.pos.x + block.settings.width > pos.x- settings.width+ pos.offsetX) {
+                        if ((pos.y - settings.height - pos.offsetY) == block.pos.y + block.settings.height && (pos.x + pos.offsetX) >= block.pos.x && block.pos.x - pos.x - settings.width + pos.offsetX < settings.width && block.pos.x + block.settings.width > pos.x - settings.width + pos.offsetX) {
                             connect = 3;
                         }
                     }
@@ -271,7 +271,7 @@ $(document).ready(function () {
                 settings.status = 3;
             }
             if (checkEdge(2) == 2) {
-                if (pos.x+pos.offsetX > 0) pos.offsetX -= moveSpeed;
+                if (pos.x + pos.offsetX > 0) pos.offsetX -= moveSpeed;
                 else pos.offsetX = 0;
             }
         };
@@ -568,8 +568,8 @@ $(document).ready(function () {
             //player.pos.offsetX -= moveSpeed;
         }
         if (upKey) {
-            if(player.check(3) != 3){
-                if (player.movement.sliding){
+            if (player.check(3) != 3) {
+                if (player.movement.sliding) {
                     player.movement.sliding = false;
                 }
                 if (player.settings.jumpHeight == 0 && player.settings.energy == 100) player.movement.jumping = true;
@@ -579,8 +579,8 @@ $(document).ready(function () {
             player.movement.sliding = true;
         }
         if (space) {
-            if(player.check(3) != 3){
-                if (player.movement.sliding){
+            if (player.check(3) != 3) {
+                if (player.movement.sliding) {
                     player.pos.offsetX -= player.settings.width;
                     player.movement.sliding = false;
                 }
@@ -889,6 +889,3 @@ $(document).ready(function () {
 
 
 });
-
-
-
