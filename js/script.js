@@ -101,7 +101,7 @@ $(document).ready(function () {
     /**
      * Game UI Settings
      */
-    if("mozImageSmoothingEnabled" in context){
+    if ("mozImageSmoothingEnabled" in context) {
         context.mozImageSmoothingEnabled = false;
     }
     var structures = [];
@@ -119,18 +119,18 @@ $(document).ready(function () {
 
     var Sprites, Player, Coin, Heart, Item, Cloud, Structure, Block;
 
-    Sprites = function(){
+    Sprites = function () {
         var sprite = [new Image(), false];
 
         sprite[0].src = "img/sprites.gif";
-        sprite[0].onload = function() {
+        sprite[0].onload = function () {
             sprite[1] = true;
         };
 
-        var draw = function(sx,sy, sWidth, sHeight, dx, dy, dWidth, dHeight){
-            if(sprite[1]){
+        var draw = function (sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) {
+            if (sprite[1]) {
                 context.drawImage(sprite[0], sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
-                if(debug){
+                if (debug) {
                     context.beginPath();
                     context.strokeRect(dx, dy, dWidth, dHeight);
                     context.lineWidth = 1;
@@ -141,7 +141,7 @@ $(document).ready(function () {
         };
 
         return {
-            draw: draw
+            draw:draw
         };
     };
 
@@ -153,165 +153,180 @@ $(document).ready(function () {
      * @param x
      * @param y
      */
-    Player = function(x,y){
-        var imageStill = {x:96, y:0, w: 17, h:44};
-        var imageRunning = {x:96, y:0, w: 17, h:44};
-        var imageJump = {x:96, y:44, w: 29, h:40};
-        var imageSlide = {x:96, y:96, w: 48, h:16};
-        var pos = {x:x,y:y,offsetY:0};
-        var settings = {width: 34, height: 88, health: 100, energy: 100, energyRegen: 2.5, status: 0, lives: 3, jumpHeight:0, maxJumpHeight:34, jumpSpeed: 4, jumping: false, sliding: false};
-        var draw = function(){
-            switch(settings.status){
+    Player = function (x, y) {
+        var imageStill = {x:96, y:0, w:17, h:44};
+        var imageRunning = {x:96, y:0, w:17, h:44};
+        var imageJump = {x:96, y:44, w:29, h:40};
+        var imageSlide = {x:96, y:96, w:48, h:16};
+        var pos = {x:x, y:y, offsetY:0, offsetX:0};
+        var settings = {width:34, height:88, health:100, energy:100, energyRegen:2.5, status:0, lives:3, jumpHeight:0, maxJumpHeight:34, jumpSpeed:4};
+        var movement = {jumping:false, sliding:false};
+        var draw = function () {
+            switch (settings.status) {
                 case 0:
-                    settings.width = imageStill.w*2;
-                    settings.height = imageStill.h*2;
-                    sprite.draw(imageStill.x,imageStill.y, imageStill.w, imageStill.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
+                    settings.width = imageStill.w * 2;
+                    settings.height = imageStill.h * 2;
+                    sprite.draw(imageStill.x, imageStill.y, imageStill.w, imageStill.h, pos.x + pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
                     break;
                 case 1:
-                    settings.width = imageRunning.w*2;
-                    settings.height = imageStill.h*2;
-                    sprite.draw(imageRunning.x,imageRunning.y, imageRunning.w, imageRunning.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
+                    settings.width = imageRunning.w * 2;
+                    settings.height = imageStill.h * 2;
+                    sprite.draw(imageRunning.x, imageRunning.y, imageRunning.w, imageRunning.h, pos.x + pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
                     break;
                 case 2:
-                    settings.width = imageJump.w*2;
-                    settings.height = imageStill.h*2;
-                    sprite.draw(imageJump.x,imageJump.y, imageJump.w, imageJump.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
-                     break;
+                    settings.width = imageJump.w * 2;
+                    settings.height = imageStill.h * 2;
+                    sprite.draw(imageJump.x, imageJump.y, imageJump.w, imageJump.h, pos.x + pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
+                    break;
                 case 3:
-                    settings.width = imageSlide.w*2;
-                    settings.height = imageSlide.h*2;
-                    sprite.draw(imageSlide.x,imageSlide.y, imageSlide.w, imageSlide.h, pos.x, pos.y+88-settings.height, settings.width, settings.height);
+                    settings.width = imageSlide.w * 2;
+                    settings.height = imageSlide.h * 2;
+                    sprite.draw(imageSlide.x, imageSlide.y, imageSlide.w, imageSlide.h, pos.x + pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
                     break;
                 default:
-                    settings.width = imageStill.w*2;
-                    settings.height = imageStill.h*2;
-                    sprite.draw(imageStill.x,imageStill.y, imageStill.w, imageStill.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
+                    settings.width = imageStill.w * 2;
+                    settings.height = imageStill.h * 2;
+                    sprite.draw(imageStill.x, imageStill.y, imageStill.w, imageStill.h, pos.x + pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
             }
         };
-        var drawStats = function(){
+        var drawStats = function () {
             context.strokeStyle = "rgba(76, 76, 76, 0.500)";
             context.font = "14px 800 Arial";
 
             //Labels
-            context.fillText("Health", player.pos.x-34, player.pos.y-(pos.offsetY+25));
-            context.fillText("Energy", player.pos.x-34, player.pos.y-(pos.offsetY+15));
+            context.fillText("Health", player.pos.x + pos.offsetX - 34, player.pos.y - settings.height - (pos.offsetY + 25));
+            context.fillText("Energy", player.pos.x + pos.offsetX - 34, player.pos.y - settings.height - (pos.offsetY + 15));
 
             //Health
             context.fillStyle = "#41b75f";
-            context.roundRect(player.pos.x, player.pos.y-(pos.offsetY+30), player.settings.health/2, 5, 2, true, false);
-            context.roundRect(player.pos.x, player.pos.y-(pos.offsetY+30), 50, 5, 2, false, true);
+            context.roundRect(player.pos.x + pos.offsetX, player.pos.y - settings.height - (pos.offsetY + 30), player.settings.health / 2, 5, 2, true, false);
+            context.roundRect(player.pos.x + pos.offsetX, player.pos.y - settings.height - (pos.offsetY + 30), 50, 5, 2, false, true);
 
             //Energy
             context.fillStyle = "#3b7afa";
-            context.roundRect(player.pos.x, player.pos.y-(pos.offsetY+20), player.settings.energy/2, 5, 2, true, false);
-            context.roundRect(player.pos.x, player.pos.y-(pos.offsetY+20), 50, 5, 2, false, true);
+            context.roundRect(player.pos.x + pos.offsetX, player.pos.y - settings.height - (pos.offsetY + 20), player.settings.energy / 2, 5, 2, true, false);
+            context.roundRect(player.pos.x + pos.offsetX, player.pos.y - settings.height - (pos.offsetY + 20), 50, 5, 2, false, true);
         };
         var checkEdge = function (edge) {
-            var connect = false;
-            switch(edge){
+            var connect = 0;
+            switch (edge) {
                 case 1:
                     // Top
-                    for(var i=0;i<blocks.length;i++){
+                    for (var i = 0; i < blocks.length; i++) {
                         var block = blocks[i];
-                        if ((pos.y-pos.offsetY)+settings.height == block.pos.y && block.pos.x-pos.x < settings.width && block.pos.x+block.settings.width > pos.x){
-                            connect = true;
-                            console.log("Contact!");
+                        if ((pos.y - pos.offsetY) == block.pos.y && block.pos.x - pos.x + pos.offsetX < settings.width && block.pos.x + block.settings.width > pos.x + pos.offsetX) {
+                            connect = 1;
+                            console.log("Contact Top!");
                         }
                     }
                     break;
                 case 2:
                     // Left edge
+                    for (var i = 0; i < blocks.length; i++) {
+                        var block = blocks[i];
+                        if ((pos.x + pos.offsetX + settings.width) == block.pos.x && block.pos.y - (pos.y - settings.height - pos.offsetY) < settings.height) {
+                            connect = 2;
+                            console.log("Contact Left!");
+                        }
+                    }
+                    break;
+                default:
+                    connect = 0;
             }
             return connect;
 
         };
-        var move = function(){
-            if(settings.jumping && settings.energy > 70){
-                if(settings.jumpHeight < settings.maxJumpHeight){
-                    pos.offsetY+= settings.jumpSpeed;
+        var move = function () {
+            if (movement.jumping && settings.energy > 70) {
+                if (settings.jumpHeight < settings.maxJumpHeight) {
+                    pos.offsetY += settings.jumpSpeed;
                     settings.jumpHeight += settings.jumpSpeed;
                     settings.status = 2;
-                }else{
-                    settings.jumping = false;
-                    if(settings.energy > 0) settings.energy-=50;
+                } else {
+                    movement.jumping = false;
+                    if (settings.energy > 0) settings.energy -= 50;
                 }
-            }else if(pos.offsetY > 0 && checkEdge(1)){
+            } else if (pos.offsetY > 0 && checkEdge(1) == 1) {
                 settings.jumpHeight = 0;
                 settings.status = 1;
-                if(settings.energy < 100) settings.energy+=settings.energyRegen;
+                if (settings.energy < 100) settings.energy += settings.energyRegen;
             }
-            else if(pos.offsetY > 0 && !checkEdge(1)){
-                pos.offsetY-= settings.jumpSpeed;
+            else if (pos.offsetY > 0 && checkEdge(1) == 0) {
+                pos.offsetY -= settings.jumpSpeed;
                 settings.jumpHeight -= settings.jumpSpeed;
-            }else if(pos.offsetY == 0){
-                settings.jumping = false;
+            } else if (pos.offsetY == 0) {
+                movement.jumping = false;
                 settings.jumpHeight = 0;
                 settings.status = 1;
-                if(settings.energy < 100) settings.energy+=settings.energyRegen;
+                if (settings.energy < 100) settings.energy += settings.energyRegen;
             }
-            if(settings.sliding){
+            if (movement.sliding) {
                 settings.status = 3;
             }
+            if (checkEdge(2) == 2) {
+                if (pos.x + pos.offsetX - settings.width > 0)pos.offsetX -= moveSpeed;
+                else pos.offsetX = 0;
+            }
         };
         return {
-            imageStill: imageStill,
-            imageRunning: imageRunning,
-            imageJump: imageJump,
-            imageSlide: imageSlide,
-            settings: settings,
-            pos: pos,
-            draw: draw,
-            drawStats: drawStats,
-            check: checkEdge,
-            move: move
+            imageStill:imageStill,
+            imageRunning:imageRunning,
+            imageJump:imageJump,
+            imageSlide:imageSlide,
+            settings:settings,
+            movement:movement,
+            pos:pos,
+            draw:draw,
+            drawStats:drawStats,
+            check:checkEdge,
+            move:move
         };
     };
 
-    Coin = function(x,y){
-        var image = {x:16, y:0, w: 16, h:16};
-        var pos = {x:x,y:y};
-        var settings = {width: 32, height: 32};
-        var draw = function(){
-            sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+    Coin = function (x, y) {
+        var image = {x:16, y:0, w:16, h:16};
+        var pos = {x:x, y:y};
+        var settings = {width:32, height:32};
+        var draw = function () {
+            sprite.draw(image.x, image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
         };
         return {
-            image: image,
-            settings: settings,
-            pos: pos,
-            draw: draw
+            image:image,
+            settings:settings,
+            pos:pos,
+            draw:draw
         };
     };
 
-    Heart = function(x,y){
-        var image = {x:16, y:17, w: 16, h:14};
-        var pos = {x:x,y:y};
-        var settings = {width: 32, height: 28};
-        var draw = function(){
-            sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+    Heart = function (x, y) {
+        var image = {x:16, y:17, w:16, h:14};
+        var pos = {x:x, y:y};
+        var settings = {width:32, height:28};
+        var draw = function () {
+            sprite.draw(image.x, image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
         };
         return {
-            image: image,
-            settings: settings,
-            pos: pos,
-            draw: draw
+            image:image,
+            settings:settings,
+            pos:pos,
+            draw:draw
         };
     };
 
-    Item = function(x,y){
-        var image = {x:16, y:17, w: 16, h:16};
-        var pos = {x:x,y:y};
-        var settings = {width: 32, height: 32};
-        var draw = function(){
-            sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+    Item = function (x, y) {
+        var image = {x:16, y:17, w:16, h:16};
+        var pos = {x:x, y:y};
+        var settings = {width:32, height:32};
+        var draw = function () {
+            sprite.draw(image.x, image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
         };
         return {
-            image: image,
-            settings: settings,
-            pos: pos,
-            draw: draw
+            image:image,
+            settings:settings,
+            pos:pos,
+            draw:draw
         };
     };
-
 
 
     /**
@@ -331,20 +346,21 @@ $(document).ready(function () {
      * @param nW
      * @param nH
      */
-    Structure = function(x,y,type,layout,nW,nH){
+    Structure = function (x, y, type, layout, nW, nH) {
         var ID = function (blockCount) {
             var blockCount = blockCount;
             return {
-                blockCount: blockCount
+                blockCount:blockCount
             };
         };
-        var pos = {x:x,y:y};
-        var layout = {layout: layout, type: type, width: blockSize*nW, height:blockSize*nH, blockCount: 0};
+        var pos = {x:x, y:y};
+        var layout = {layout:layout, type:type, width:blockSize * nW, height:blockSize * nH, blockCount:0};
         var id = new ID(1);
-        switch(layout.layout){
+        var offset = 0;
+        switch (layout.layout) {
             case 1:
                 // Single Block
-                blocks.push(new Block(pos.x,pos.y,layout.type,id));
+                blocks.push(new Block(pos.x, pos.y, layout.type, id));
                 layout.blockCount++;
                 break;
             case 2:
@@ -355,8 +371,10 @@ $(document).ready(function () {
                     // ADD ROWS
                     for (var j = 0; j < numHigh; j++) {
                         // ADD COLS
-                        if(nH >= 2){var offset = blockSize}
-                        blocks.push(new Block(pos.x+(i*blockSize),pos.y-((j*blockSize)+offset),layout.type,id));
+                        if (nH >= 2) {
+                            offset = blockSize
+                        }
+                        blocks.push(new Block(pos.x + (i * blockSize), pos.y - ((j * blockSize) + offset), layout.type, id));
                         layout.blockCount++;
                     }
                 }
@@ -369,12 +387,12 @@ $(document).ready(function () {
                 var step = 0;
                 for (var j = 0; j < numHigh; j++) {
                     // ADD ROWS
-                    if(j > 0) step++;
-                    if(j > 0) numWide--;
+                    if (j > 0) step++;
+                    if (j > 0) numWide--;
                     for (var i = 0; i < numWide; i++) {
                         // ADD COLS
-                        if(i > step){
-                            blocks.push(new Block(pos.x+(i*blockSize),pos.y-(j*blockSize),layout.type,id));
+                        if (i > step) {
+                            blocks.push(new Block(pos.x + (i * blockSize), pos.y - (j * blockSize), layout.type, id));
                             layout.blockCount++;
                         }
 
@@ -389,11 +407,11 @@ $(document).ready(function () {
                 var step = 0;
                 for (var j = 0; j < numHigh; j++) {
                     // ADD ROWS
-                    if(j > 0) step++;
+                    if (j > 0) step++;
                     for (var i = 0; i < numWide; i++) {
                         // ADD COLS
-                        if(i > step){
-                            blocks.push(new Block(pos.x+(i*blockSize),pos.y-(j*blockSize),layout.type,id));
+                        if (i > step) {
+                            blocks.push(new Block(pos.x + (i * blockSize), pos.y - (j * blockSize), layout.type, id));
                             layout.blockCount++;
                         }
 
@@ -408,25 +426,27 @@ $(document).ready(function () {
                 var step = numWide;
                 for (var j = 0; j < numHigh; j++) {
                     // ADD ROWS
-                    if(j > 0) numWide--;
-                    if(nH >= 2){var offset = blockSize}
+                    if (j > 0) numWide--;
                     for (var i = 0; i < numWide; i++) {
                         // ADD COLS
-                        blocks.push(new Block(pos.x+(i*blockSize),pos.y-((j*blockSize)+offset),layout.type,id));
+                        if (nH >= 2) {
+                            offset = blockSize
+                        }
+                        blocks.push(new Block(pos.x + (i * blockSize), pos.y - ((j * blockSize) + offset), layout.type, id));
                         layout.blockCount++;
                     }
                 }
                 id.blockCount = layout.blockCount;
                 break;
             default:
-                blocks.push(new Block(pos.x,pos.y,layout.type,id));
+                blocks.push(new Block(pos.x, pos.y, layout.type, id));
                 layout.blockCount++;
         }
         return {
-            pos: pos,
-            id: id,
-            layout: layout,
-            draw: draw
+            pos:pos,
+            id:id,
+            layout:layout,
+            draw:draw
         };
 
     };
@@ -440,74 +460,74 @@ $(document).ready(function () {
      * @param type
      * @param owner
      */
-    Block = function(x,y,type, owner){
-        if(!type){
-            type = 1;
+    Block = function (x, y, type, owner) {
+        var image = {x:80, y:(16 * type), w:16, h:16};
+        var pos = {x:x, y:y};
+        var settings = {width:blockSize, height:blockSize, type:type, owner:owner};
+        if (!type) {
+            settings.type = 1;
         }
-        var image = {x:80, y:(16*type), w: 16, h:16};
-        var pos = {x:x,y:y};
-        var settings = {width: blockSize, height: blockSize, type: type, owner: owner};
-        var draw = function(){
-                // Single Block
-                sprite.draw(image.x,image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
-                if(debug && settings.type){
-                    context.font = "20px 800 Arial";
-                    context.fillText(settings.type, pos.x+4, pos.y+10);
-                }
+        var draw = function () {
+            // Single Block
+            sprite.draw(image.x, image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+            if (debug && settings.type) {
+                context.font = "20px 800 Arial";
+                context.fillText(settings.type, pos.x + 4, pos.y + 10);
+            }
         };
         var checkEdge = function () {
-            return !(pos.x <= 0-settings.width ||  pos.y <= 0-settings.height);
+            return !(pos.x <= 0 - settings.width || pos.y <= 0 - settings.height);
         };
-        var move = function(){
+        var move = function () {
             pos.x -= moveSpeed;
         };
         return {
-            image: image,
-            pos: pos,
-            settings: settings,
-            draw: draw,
-            check: checkEdge,
-            move: move
+            image:image,
+            pos:pos,
+            settings:settings,
+            draw:draw,
+            check:checkEdge,
+            move:move
         };
     };
 
-    Cloud = function(x,y){
-        var image = {w: 41, h:21, x:36, y:0};
-        var type = randomFromTo(0,1);
-        if(type==1){
+    Cloud = function (x, y) {
+        var image = {w:41, h:21, x:36, y:0};
+        var type = randomFromTo(0, 1);
+        if (type == 1) {
             image.y = 22
-        }else{
+        } else {
             image.y = 0
         }
-        var pos = {x:x,y:y, offsetx:0, offsety:0, speed: 0.2};
-        var settings = {width: 81, height: 42};
-        var draw = function(){
-            sprite.draw(image.x,image.y, image.w, image.h, pos.x+pos.offsetx, pos.y+pos.offsety, settings.width, settings.height);
+        var pos = {x:x, y:y, offsetx:0, offsety:0, speed:0.2};
+        var settings = {width:81, height:42};
+        var draw = function () {
+            sprite.draw(image.x, image.y, image.w, image.h, pos.x + pos.offsetx, pos.y + pos.offsety, settings.width, settings.height);
         };
-        var move = function(){
+        var move = function () {
             pos.offsetx -= pos.speed;
-            if((pos.x+pos.offsetx+settings.width) <= 0){
-                pos.offsetx += canvasWidth+settings.width;
+            if ((pos.x + pos.offsetx + settings.width) <= 0) {
+                pos.offsetx += canvasWidth + settings.width;
                 pos.offsety = randomFromTo(-42, 42);
-                if(pos.offsety+pos.y < 0) pos.offsety = 0;
-                type = randomFromTo(0,1);
+                if (pos.offsety + pos.y < 0) pos.offsety = 0;
+                type = randomFromTo(0, 1);
                 //pos.speed = randomFromTo(0,1);
 
             }
         };
         return {
-            image: image,
-            settings: settings,
-            pos: pos,
-            move: move,
-            draw: draw
+            image:image,
+            settings:settings,
+            pos:pos,
+            move:move,
+            draw:draw
         };
     };
     /**
      * Create object instances
      */
     var sprite = new Sprites();
-    var player = new Player(100, floorHeight - 88);
+    var player = new Player(100, floorHeight);
     var coin = new Coin(20, 20);
     var heart = new Heart(20, 58);
 
@@ -515,7 +535,7 @@ $(document).ready(function () {
 
     var clouds = [];
     var cloudCount = 4;
-    for(var i=0;i<cloudCount; i++){
+    for (var i = 0; i < cloudCount; i++) {
         var x = randomFromTo(0, canvasWidth);
         var y = randomFromTo(10, 42);
         var cloud = new Cloud(x, y);
@@ -535,23 +555,25 @@ $(document).ready(function () {
         if (touchable && touches.length > 0) {
         }
         if (rightKey) {
+            //player.pos.offsetX += moveSpeed;
         }
         if (leftKey) {
+            //player.pos.offsetX -= moveSpeed;
         }
         if (upKey) {
-            if (player.settings.sliding)player.settings.sliding = false;
-            if(player.settings.jumpHeight == 0 && player.settings.energy == 100) player.settings.jumping = true;
+            if (player.movement.sliding)player.movement.sliding = false;
+            if (player.settings.jumpHeight == 0 && player.settings.energy == 100) player.movement.jumping = true;
         }
-        if(downKey){
-            player.settings.sliding = true;
+        if (downKey) {
+            player.movement.sliding = true;
         }
-        if(space){
-            if (player.settings.sliding)player.settings.sliding = false;
-            if(player.settings.jumpHeight == 0) player.settings.jumping = true;
+        if (space) {
+            if (player.movement.sliding)player.movement.sliding = false;
+            if (player.settings.jumpHeight == 0) player.movement.jumping = true;
         }
         player.move();
 
-        if(debug){
+        if (debug) {
             context.save();
             player.drawStats();
             context.restore();
@@ -559,7 +581,7 @@ $(document).ready(function () {
 
         //Draw Clouds
         context.save();
-        for(var i=0; i< clouds.length; i++){
+        for (var i = 0; i < clouds.length; i++) {
             var cloud = clouds[i];
             cloud.draw();
             cloud.move();
@@ -574,11 +596,11 @@ $(document).ready(function () {
 
         context.save();
         addRemoveStructures();
-        for(var i=0;i<blocks.length; i++){
+        for (var i = 0; i < blocks.length; i++) {
             var block = blocks[i];
-            if(block){
+            if (block) {
                 block.draw();
-                if(!block.check()){
+                if (!block.check()) {
                     block.settings.owner.blockCount--;
                     blocks.removeByValue(block);
                 }
@@ -593,24 +615,24 @@ $(document).ready(function () {
      * Adds structures if less that specified count.
      * Removes structures if they contain no blocks.
      */
-    function addRemoveStructures(){
-        if(structures.length < structureCount && spacing == structureSpacing){
-            var ranType = bitwiseRound(Math.random()*3);
-            var ranLayout = bitwiseRound(Math.random()*4);
-            var ranHeight = bitwiseRound(Math.random()*4);
-            var ranWidth = bitwiseRound(Math.random()*4);
+    function addRemoveStructures() {
+        if (structures.length < structureCount && spacing == structureSpacing) {
+            var ranType = randomFromTo(1, 3);
+            var ranLayout = bitwiseRound(Math.random() * 4);
+            var ranHeight = bitwiseRound(Math.random() * 4);
+            var ranWidth = bitwiseRound(Math.random() * 4);
             structures.push(
-                new Structure(canvasWidth, floorHeight-32, ranType, ranLayout, ranWidth, ranHeight)
+                new Structure(canvasWidth, floorHeight - 32, ranType, ranLayout, ranWidth, ranHeight)
             );
-            console.log("Added Structure "+ranLayout);
-            spacing = -ranWidth*blockSize;
+            console.log("Added Structure " + ranLayout);
+            spacing = -ranWidth * blockSize;
         } else spacing++;
-        if(structures.length >= structureCount){
-            for(var i=0;i<structures.length;i++){
+        if (structures.length >= structureCount) {
+            for (var i = 0; i < structures.length; i++) {
                 var structure = structures[i];
-                if(structure.id.blockCount <= 0){
+                if (structure.id.blockCount <= 0) {
                     structures.removeByValue(structure);
-                    console.log("Removed Structure "+i);
+                    console.log("Removed Structure " + i);
                 }
             }
         }
@@ -626,8 +648,8 @@ $(document).ready(function () {
 
     CanvasRenderingContext2D.prototype.roundRect =
 
-        function(x, y, width, height, radius, fill, stroke) {
-            if (typeof stroke == "undefined" ) {
+        function (x, y, width, height, radius, fill, stroke) {
+            if (typeof stroke == "undefined") {
                 stroke = true;
             }
             if (typeof radius === "undefined") {
@@ -688,8 +710,8 @@ $(document).ready(function () {
         if (evt.keyCode === 38) upKey = true;
         else if (evt.keyCode === 40) downKey = true;
         if (evt.keyCode === 32) space = true;
-        if(evt.keyCode === 112) debugMode();
-        if(evt.keyCode === 80) if(!pause)pause=true;
+        if (evt.keyCode === 112) debugMode();
+        if (evt.keyCode === 80) if (!pause)pause = true;
 
     }
 
@@ -736,7 +758,7 @@ $(document).ready(function () {
     /**
      * When play button is pressed
      */
-    playButton.on("click touchend",(function(event){
+    playButton.on("click touchend", (function (event) {
         playGame = true;
         pause = false;
         gameOver = false;
@@ -775,7 +797,7 @@ $(document).ready(function () {
      * Code is taken from Firefox online Fullscreen API documentation
      */
     function toggleFullScreen() {
-        if ((document.fullScreenElement && document.fullScreenElement !== null) ||    // alternative standard method
+        if ((document.fullScreenElement && document.fullScreenElement !== null) || // alternative standard method
             (!document.mozFullScreen && !document.webkitIsFullScreen)) {               // current working methods
             if (document.documentElement.requestFullScreen) {
                 document.documentElement.requestFullScreen();
@@ -800,8 +822,8 @@ $(document).ready(function () {
      * Floors a number with better performance the Math.Floor().
      * @param number
      */
-    function bitwiseRound(number){
-        var rounded = ~~ (0.5 + number);
+    function bitwiseRound(number) {
+        var rounded = ~~(0.5 + number);
         return rounded;
     }
 
@@ -833,18 +855,19 @@ $(document).ready(function () {
 
     function startGame() {
         requestAnimationFrame(startGame);
-        if(playGame){
-            if(pause){
+        if (playGame) {
+            if (pause) {
                 uiPause.show();
-            }else{
+            } else {
                 draw();
             }
-        }else if(gameOver){
+        } else if (gameOver) {
             uiOver.show();
-        }else{
+        } else {
             uiStart.show();
         }
     }
+
     draw();
     startGame();
 
