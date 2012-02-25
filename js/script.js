@@ -214,9 +214,8 @@ $(document).ready(function () {
                     // Top
                     for (var i = 0; i < blocks.length; i++) {
                         var block = blocks[i];
-                        if ((pos.y - pos.offsetY) == block.pos.y && block.pos.x - pos.x + pos.offsetX < settings.width && block.pos.x + block.settings.width > pos.x + pos.offsetX) {
+                        if ((pos.y - pos.offsetY) == block.pos.y && (pos.x + pos.offsetX + settings.width) >= block.pos.x && block.pos.x - pos.x+pos.offsetX < settings.width && block.pos.x + block.settings.width > pos.x + pos.offsetX) {
                             connect = 1;
-                            console.log("Contact Top!");
                         }
                     }
                     break;
@@ -224,9 +223,8 @@ $(document).ready(function () {
                     // Left edge
                     for (var i = 0; i < blocks.length; i++) {
                         var block = blocks[i];
-                        if ((pos.x + pos.offsetX + settings.width) == block.pos.x && block.pos.y - (pos.y - settings.height - pos.offsetY) < settings.height) {
+                        if ((pos.x + pos.offsetX + settings.width) == block.pos.x && block.pos.y+block.settings.height > pos.y-settings.height-pos.offsetY && block.pos.y - (pos.y-settings.height-pos.offsetY) < settings.height-4) {
                             connect = 2;
-                            console.log("Contact Left!");
                         }
                     }
                     break;
@@ -264,7 +262,7 @@ $(document).ready(function () {
                 settings.status = 3;
             }
             if (checkEdge(2) == 2) {
-                if (pos.x + pos.offsetX - settings.width > 0)pos.offsetX -= moveSpeed;
+                if (pos.x+pos.offsetX+settings.width > 0) pos.offsetX -= moveSpeed;
                 else pos.offsetX = 0;
             }
         };
