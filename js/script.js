@@ -228,6 +228,15 @@ $(document).ready(function () {
                         }
                     }
                     break;
+                case 3:
+                    // Bottom
+                    for (var i = 0; i < blocks.length; i++) {
+                        var block = blocks[i];
+                        if ((pos.y-settings.height- pos.offsetY) == block.pos.y+block.settings.height && (pos.x + pos.offsetX + settings.width) >= block.pos.x && block.pos.x - pos.x+pos.offsetX < settings.width && block.pos.x + block.settings.width > pos.x + pos.offsetX) {
+                            connect = 3;
+                        }
+                    }
+                    break;
                 default:
                     connect = 0;
             }
@@ -559,15 +568,24 @@ $(document).ready(function () {
             //player.pos.offsetX -= moveSpeed;
         }
         if (upKey) {
-            if (player.movement.sliding)player.movement.sliding = false;
-            if (player.settings.jumpHeight == 0 && player.settings.energy == 100) player.movement.jumping = true;
+            if(player.check(3) != 3){
+                if (player.movement.sliding){
+                    player.movement.sliding = false;
+                }
+                if (player.settings.jumpHeight == 0 && player.settings.energy == 100) player.movement.jumping = true;
+            }
         }
         if (downKey) {
             player.movement.sliding = true;
         }
         if (space) {
-            if (player.movement.sliding)player.movement.sliding = false;
-            if (player.settings.jumpHeight == 0) player.movement.jumping = true;
+            if(player.check(3) != 3){
+                if (player.movement.sliding){
+                    player.pos.offsetX -= player.settings.width;
+                    player.movement.sliding = false;
+                }
+                if (player.settings.jumpHeight == 0 && player.settings.energy == 100) player.movement.jumping = true;
+            }
         }
         player.move();
 
