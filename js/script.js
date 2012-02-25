@@ -157,28 +157,34 @@ $(document).ready(function () {
         var imageStill = {x:96, y:0, w: 17, h:44};
         var imageRunning = {x:96, y:0, w: 17, h:44};
         var imageJump = {x:96, y:44, w: 29, h:40};
-        var imageSlide = {x:96, y:0, w: 17, h:44};
+        var imageSlide = {x:96, y:96, w: 48, h:16};
         var pos = {x:x,y:y,offsetY:0};
-        var settings = {width: 34, height: 88, health: 100, energy: 100, energyRegen: 5, status: 0, lives: 3, jumpHeight:0, maxJumpHeight:34, jumpSpeed: 4, jumping: false};
+        var settings = {width: 34, height: 88, health: 100, energy: 100, energyRegen: 2.5, status: 0, lives: 3, jumpHeight:0, maxJumpHeight:34, jumpSpeed: 4, jumping: false, sliding: false};
         var draw = function(){
             switch(settings.status){
                 case 0:
                     settings.width = imageStill.w*2;
+                    settings.height = imageStill.h*2;
                     sprite.draw(imageStill.x,imageStill.y, imageStill.w, imageStill.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
                     break;
                 case 1:
                     settings.width = imageRunning.w*2;
+                    settings.height = imageStill.h*2;
                     sprite.draw(imageRunning.x,imageRunning.y, imageRunning.w, imageRunning.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
                     break;
                 case 2:
                     settings.width = imageJump.w*2;
+                    settings.height = imageStill.h*2;
                     sprite.draw(imageJump.x,imageJump.y, imageJump.w, imageJump.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
                      break;
                 case 3:
-                    sprite.draw(imageSlide.x,imageSlide.y, imageSlide.w, imageSlide.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
+                    settings.width = imageSlide.w*2;
+                    settings.height = imageSlide.h*2;
+                    sprite.draw(imageSlide.x,imageSlide.y, imageSlide.w, imageSlide.h, pos.x, pos.y+88-settings.height, settings.width, settings.height);
                     break;
                 default:
                     settings.width = imageStill.w*2;
+                    settings.height = imageStill.h*2;
                     sprite.draw(imageStill.x,imageStill.y, imageStill.w, imageStill.h, pos.x, pos.y-pos.offsetY, settings.width, settings.height);
             }
         };
@@ -237,12 +243,14 @@ $(document).ready(function () {
             else if(pos.offsetY > 0 && !checkEdge(1)){
                 pos.offsetY-= settings.jumpSpeed;
                 settings.jumpHeight -= settings.jumpSpeed;
-                if(settings.energy < 100) settings.energy+=settings.energyRegen;
             }else if(pos.offsetY == 0){
                 settings.jumping = false;
                 settings.jumpHeight = 0;
                 settings.status = 1;
                 if(settings.energy < 100) settings.energy+=settings.energyRegen;
+            }
+            if(settings.sliding){
+                settings.status = 3;
             }
         };
         return {
@@ -531,11 +539,14 @@ $(document).ready(function () {
         if (leftKey) {
         }
         if (upKey) {
+            if (player.settings.sliding)player.settings.sliding = false;
             if(player.settings.jumpHeight == 0 && player.settings.energy == 100) player.settings.jumping = true;
         }
         if(downKey){
+            player.settings.sliding = true;
         }
         if(space){
+            if (player.settings.sliding)player.settings.sliding = false;
             if(player.settings.jumpHeight == 0) player.settings.jumping = true;
         }
         player.move();
@@ -584,10 +595,10 @@ $(document).ready(function () {
      */
     function addRemoveStructures(){
         if(structures.length < structureCount && spacing == structureSpacing){
-            var ranType = randomFromTo(1,2);
-            var ranLayout = randomFromTo(1,4);
-            var ranHeight = randomFromTo(1,4);
-            var ranWidth = randomFromTo(1,4);
+            var ranType = bitwiseRound(Math.random()*3);
+            var ranLayout = bitwiseRound(Math.random()*4);
+            var ranHeight = bitwiseRound(Math.random()*4);
+            var ranWidth = bitwiseRound(Math.random()*4);
             structures.push(
                 new Structure(canvasWidth, floorHeight-32, ranType, ranLayout, ranWidth, ranHeight)
             );
