@@ -154,8 +154,8 @@ $(document).ready(function () {
      * @param y
      */
     Player = function (x, y) {
-        var imageStill = {x:96, y:0, w:17, h:44};
-        var imageRunning = {x:96, y:0, w:17, h:44};
+        var imageStill = {x:96, y:0, w:17, h:42};
+        var imageRunning = {x:96, y:0, w:17, h:42, stage: 1};
         var imageJump = {x:96, y:44, w:29, h:40};
         var imageSlide = {x:96, y:96, w:48, h:16};
         var pos = {x:x, y:y, offsetY:0, offsetX:0};
@@ -171,7 +171,22 @@ $(document).ready(function () {
                 case 1:
                     settings.width = imageRunning.w * 2;
                     settings.height = imageStill.h * 2;
-                    sprite.draw(imageRunning.x, imageRunning.y, imageRunning.w, imageRunning.h, pos.x - settings.width + pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
+                    switch(imageRunning.stage){
+                        case 1:
+                            sprite.draw(imageRunning.x, 112, imageRunning.w, imageRunning.h, pos.x - settings.width + pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
+                            break;
+                        case 2:
+                            sprite.draw(imageRunning.x, 152, imageRunning.w, imageRunning.h, pos.x - settings.width + pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
+                            break;
+                        case 3:
+                            sprite.draw(imageRunning.x, 192, imageRunning.w, imageRunning.h, pos.x - settings.width + pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
+                            break;
+                        case 4:
+                            sprite.draw(imageRunning.x, 152, imageRunning.w, imageRunning.h, pos.x - settings.width + pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
+                            break;
+                        default:
+                            break;
+                    }
                     break;
                 case 2:
                     settings.width = imageJump.w * 2;
