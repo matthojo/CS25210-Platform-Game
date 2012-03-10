@@ -107,10 +107,11 @@ $(document).ready(function () {
     var structures = [];
     var structureCount = 4;
     var blocks = [];
-    var moveSpeed = 1;
+    var moveSpeed = 4;
     var blockSize = 32;
-    var structureSpacing = 200;
-    var spacing = 200;
+    var structureSpacing = 50;
+    // Set spacing to max for now so first structure is sent straight in.
+    var spacing = 50;
     var floorHeight = canvasHeight - 49;
 
     /**
@@ -155,11 +156,11 @@ $(document).ready(function () {
      */
     Player = function (x, y) {
         var imageStill = {x:96, y:0, w:17, h:42};
-        var imageRunning = {x:96, y:0, w:17, h:42, stage: 1};
+        var imageRunning = {x:96, y:0, w:30, h:40, stage: 1, timeout:0, maxTimeout:8};
         var imageJump = {x:96, y:44, w:29, h:40};
         var imageSlide = {x:96, y:96, w:48, h:16};
         var pos = {x:x, y:y, offsetY:0, offsetX:0};
-        var settings = {width:34, height:88, health:100, energy:100, energyRegen:2.5, status:0, lives:3, jumpHeight:0, maxJumpHeight:34, jumpSpeed:4};
+        var settings = {width:34, height:88, health:100, energy:100, energyRegen:5, status:0, lives:3, jumpHeight:0, maxJumpHeight:40, jumpSpeed:4};
         var movement = {jumping:false, sliding:false};
         var draw = function () {
             switch (settings.status) {
@@ -174,16 +175,41 @@ $(document).ready(function () {
                     switch(imageRunning.stage){
                         case 1:
                             sprite.draw(imageRunning.x, 112, imageRunning.w, imageRunning.h, pos.x - settings.width + pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
+                            if(imageRunning.timeout == imageRunning.maxTimeout){
+                                imageRunning.stage = 2;
+                                imageRunning.timeout = 0;
+                            }else{
+                                imageRunning.timeout++;
+                            }
                             break;
                         case 2:
                             sprite.draw(imageRunning.x, 152, imageRunning.w, imageRunning.h, pos.x - settings.width + pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
+                            if(imageRunning.timeout == imageRunning.maxTimeout){
+                                imageRunning.stage = 3;
+                                imageRunning.timeout = 0;
+                            }else{
+                                imageRunning.timeout++;
+                            }
                             break;
                         case 3:
                             sprite.draw(imageRunning.x, 192, imageRunning.w, imageRunning.h, pos.x - settings.width + pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
+                            if(imageRunning.timeout == imageRunning.maxTimeout){
+                                imageRunning.stage = 4;
+                                imageRunning.timeout = 0;
+                            }else{
+                                imageRunning.timeout++;
+                            }
                             break;
                         case 4:
                             sprite.draw(imageRunning.x, 152, imageRunning.w, imageRunning.h, pos.x - settings.width + pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
+                            if(imageRunning.timeout == imageRunning.maxTimeout){
+                                imageRunning.stage = 1;
+                                imageRunning.timeout = 0;
+                            }else{
+                                imageRunning.timeout++;
+                            }
                             break;
+
                         default:
                             break;
                     }
@@ -205,22 +231,30 @@ $(document).ready(function () {
             }
         };
         var drawStats = function () {
-            context.strokeStyle = "rgba(76, 76, 76, 0.500)";
-            context.font = "14px 800 Arial";
 
-            //Labels
-            context.fillText("Health", player.pos.x + pos.offsetX - 34, player.pos.y - settings.height - (pos.offsetY + 25));
-            context.fillText("Energy", player.pos.x + pos.offsetX - 34, player.pos.y - settings.height - (pos.offsetY + 15));
+            coin.draw();
+            heart.draw();
 
-            //Health
-            context.fillStyle = "#41b75f";
-            context.roundRect(player.pos.x + pos.offsetX, player.pos.y - settings.height - (pos.offsetY + 30), player.settings.health / 2, 5, 2, true, false);
-            context.roundRect(player.pos.x + pos.offsetX, player.pos.y - settings.height - (pos.offsetY + 30), 50, 5, 2, false, true);
+            // Draw in health(?) and energy when debugging
+            if(debug){
+                context.strokeStyle = "rgba(76, 76, 76, 0.500)";
+                context.font = "14px 800 Arial";
 
-            //Energy
-            context.fillStyle = "#3b7afa";
-            context.roundRect(player.pos.x + pos.offsetX, player.pos.y - settings.height - (pos.offsetY + 20), player.settings.energy / 2, 5, 2, true, false);
-            context.roundRect(player.pos.x + pos.offsetX, player.pos.y - settings.height - (pos.offsetY + 20), 50, 5, 2, false, true);
+                //Labels
+                context.fillText("Health", player.pos.x + pos.offsetX - 34, player.pos.y - settings.height - (pos.offsetY + 25));
+                context.fillText("Energy", player.pos.x + pos.offsetX - 34, player.pos.y - settings.height - (pos.offsetY + 15));
+
+                //Health
+                context.fillStyle = "#41b75f";
+                context.roundRect(player.pos.x + pos.offsetX, player.pos.y - settings.height - (pos.offsetY + 30), player.settings.health / 2, 5, 2, true, false);
+                context.roundRect(player.pos.x + pos.offsetX, player.pos.y - settings.height - (pos.offsetY + 30), 50, 5, 2, false, true);
+
+                //Energy
+                context.fillStyle = "#3b7afa";
+                context.roundRect(player.pos.x + pos.offsetX, player.pos.y - settings.height - (pos.offsetY + 20), player.settings.energy / 2, 5, 2, true, false);
+                context.roundRect(player.pos.x + pos.offsetX, player.pos.y - settings.height - (pos.offsetY + 20), 50, 5, 2, false, true);
+            }
+
         };
         var checkEdge = function (edge) {
             var connect = 0;
@@ -283,7 +317,9 @@ $(document).ready(function () {
                 if (settings.energy < 100) settings.energy += settings.energyRegen;
             }
             if (movement.sliding) {
-                settings.status = 3;
+                if(pos.offsetY == 0){
+                    settings.status = 3;
+                }
             }
             if (checkEdge(2) == 2) {
                 if (pos.x + pos.offsetX > 0) pos.offsetX -= moveSpeed;
@@ -468,7 +504,7 @@ $(document).ready(function () {
             pos:pos,
             id:id,
             layout:layout,
-            draw:draw
+            offset: offset
         };
 
     };
@@ -545,11 +581,12 @@ $(document).ready(function () {
             draw:draw
         };
     };
+
     /**
      * Create object instances
      */
     var sprite = new Sprites();
-    var player = new Player(100, floorHeight);
+    var player = new Player(canvasWidth/2, floorHeight);
     var coin = new Coin(20, 20);
     var heart = new Heart(20, 58);
 
@@ -567,7 +604,7 @@ $(document).ready(function () {
     /**
      * Draws everything together.
      */
-    function draw() {
+    function render() {
         // Clear the frame
         context.save();
         context.clearRect(0, 0, canvasWidth, canvasHeight);
@@ -602,13 +639,20 @@ $(document).ready(function () {
                 if (player.settings.jumpHeight == 0 && player.settings.energy == 100) player.movement.jumping = true;
             }
         }
+
+        // Move the player
         player.move();
 
-        if (debug) {
-            context.save();
+        // Draw in stats
+        context.save();
             player.drawStats();
-            context.restore();
-        }
+        context.restore();
+
+        // Draw in Player
+
+        context.save();
+        player.draw();
+        context.restore();
 
         //Draw Clouds
         context.save();
@@ -617,12 +661,6 @@ $(document).ready(function () {
             cloud.draw();
             cloud.move();
         }
-        context.restore();
-
-        context.save();
-        player.draw();
-        coin.draw();
-        heart.draw();
         context.restore();
 
         context.save();
@@ -655,15 +693,15 @@ $(document).ready(function () {
             structures.push(
                 new Structure(canvasWidth, floorHeight - 32, ranType, ranLayout, ranWidth, ranHeight)
             );
-            console.log("Added Structure " + ranLayout);
-            spacing = -ranWidth * blockSize;
-        } else spacing++;
+            //console.log("Added Structure " + ranLayout);
+            spacing = -(ranWidth * blockSize);
+        } else if(spacing < structureSpacing) spacing++;
         if (structures.length >= structureCount) {
             for (var i = 0; i < structures.length; i++) {
                 var structure = structures[i];
                 if (structure.id.blockCount <= 0) {
                     structures.removeByValue(structure);
-                    console.log("Removed Structure " + i);
+                    //console.log("Removed Structure " + i);
                 }
             }
         }
@@ -703,7 +741,7 @@ $(document).ready(function () {
             if (fill) {
                 this.fill();
             }
-        }
+        };
 
     /**
      * Turn on debug options and display FPS
@@ -890,7 +928,7 @@ $(document).ready(function () {
             if (pause) {
                 uiPause.show();
             } else {
-                draw();
+                render();
             }
         } else if (gameOver) {
             uiOver.show();
@@ -899,7 +937,7 @@ $(document).ready(function () {
         }
     }
 
-    draw();
+    render();
     startGame();
 
 
