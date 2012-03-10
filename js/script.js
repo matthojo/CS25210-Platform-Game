@@ -160,7 +160,7 @@ $(document).ready(function () {
         var imageJump = {x:96, y:44, w:29, h:40};
         var imageSlide = {x:96, y:96, w:48, h:16};
         var pos = {x:x, y:y, offsetY:0, offsetX:0};
-        var settings = {width:34, height:88, health:100, energy:100, energyRegen:5, status:0, lives:3, jumpHeight:0, maxJumpHeight:40, jumpSpeed:4};
+        var settings = {width:34, height:88, coins:0, health:100, energy:100, energyRegen:5, status:0, lives:3, jumpHeight:0, maxJumpHeight:40, jumpSpeed:4};
         var movement = {jumping:false, sliding:false};
         var draw = function () {
             switch (settings.status) {
@@ -232,17 +232,22 @@ $(document).ready(function () {
         };
         var drawStats = function () {
 
+            context.font = "20px SilkscreenBold";
             coin.draw();
+            context.fillText("x "+settings.coins, 58, 40);
+
             heart.draw();
+            context.fillText("x "+settings.lives, 58, 80);
 
             // Draw in health(?) and energy when debugging
             if(debug){
+                context.translate(-10, 0);
                 context.strokeStyle = "rgba(76, 76, 76, 0.500)";
-                context.font = "14px 800 Arial";
+                context.font = "11px SilkscreenNormal";
 
                 //Labels
-                context.fillText("Health", player.pos.x + pos.offsetX - 34, player.pos.y - settings.height - (pos.offsetY + 25));
-                context.fillText("Energy", player.pos.x + pos.offsetX - 34, player.pos.y - settings.height - (pos.offsetY + 15));
+                context.fillText("Health", player.pos.x + pos.offsetX - 50, player.pos.y - settings.height - (pos.offsetY + 25));
+                context.fillText("Energy", player.pos.x + pos.offsetX - 50, player.pos.y - settings.height - (pos.offsetY + 15));
 
                 //Health
                 context.fillStyle = "#41b75f";
@@ -256,7 +261,7 @@ $(document).ready(function () {
             }
 
         };
-        var checkEdge = function (edge) {
+        var checkBlockEdge = function (edge) {
             var connect = 0;
             switch (edge) {
                 case 1:
@@ -302,12 +307,12 @@ $(document).ready(function () {
                     movement.jumping = false;
                     if (settings.energy > 0) settings.energy -= 50;
                 }
-            } else if (pos.offsetY > 0 && checkEdge(1) == 1) {
+            } else if (pos.offsetY > 0 && checkBlockEdge(1) == 1) {
                 settings.jumpHeight = 0;
                 settings.status = 1;
                 if (settings.energy < 100) settings.energy += settings.energyRegen;
             }
-            else if (pos.offsetY > 0 && checkEdge(1) == 0) {
+            else if (pos.offsetY > 0 && checkBlockEdge(1) == 0) {
                 pos.offsetY -= settings.jumpSpeed;
                 settings.jumpHeight -= settings.jumpSpeed;
             } else if (pos.offsetY == 0) {
@@ -321,9 +326,26 @@ $(document).ready(function () {
                     settings.status = 3;
                 }
             }
-            if (checkEdge(2) == 2) {
+            if (checkBlockEdge(2) == 2) {
                 if (pos.x + pos.offsetX > 0) pos.offsetX -= moveSpeed;
-                else pos.offsetX = 0;
+                else{
+                    pos.offsetX = 0;
+                    life("dec");
+                }
+            }
+        };
+        var life = function (opt){
+            switch(opt){
+                case "dec":
+                    if(settings.lives > 0)settings.lives--;
+                    else{
+                        gameOver = true;
+                        playGame = false;
+                    }
+                    break;
+                case "inc":
+                    settings.lives++;
+                    break;
             }
         };
         return {
@@ -336,8 +358,9 @@ $(document).ready(function () {
             pos:pos,
             draw:draw,
             drawStats:drawStats,
-            check:checkEdge,
-            move:move
+            check:checkBlockEdge,
+            move:move,
+            life:life
         };
     };
 
@@ -640,20 +663,6 @@ $(document).ready(function () {
             }
         }
 
-        // Move the player
-        player.move();
-
-        // Draw in stats
-        context.save();
-            player.drawStats();
-        context.restore();
-
-        // Draw in Player
-
-        context.save();
-        player.draw();
-        context.restore();
-
         //Draw Clouds
         context.save();
         for (var i = 0; i < clouds.length; i++) {
@@ -663,6 +672,20 @@ $(document).ready(function () {
         }
         context.restore();
 
+        // Move the player
+        player.move();
+
+        // Draw in player stats
+        context.save();
+        player.drawStats();
+        context.restore();
+
+        // Draw in Player
+        context.save();
+        player.draw();
+        context.restore();
+
+        //Draw structures
         context.save();
         addRemoveStructures();
         for (var i = 0; i < blocks.length; i++) {
