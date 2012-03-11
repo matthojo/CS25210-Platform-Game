@@ -1463,7 +1463,24 @@ audio .sound{display: none;}
     font-weight: normal;
     display: none;
 }
-
+#console{
+    width: 800px;
+    margin: 0 auto;
+    background: #222;
+    color: #FFF;
+}
+#log{
+    display: block;
+    /* enough padding to clear the toolbar.. is there a better way to do this? */
+    padding-bottom: 2.1em;
+    height: 100px;
+    overflow: hidden;
+    background: #222;
+    color: #FFF;
+}
+#log p.msg{
+    margin-bottom: 4px;
+}
 
 
 

@@ -69,9 +69,12 @@ for optimal performance, create your own custom Modernizr build: www.modernizr.c
             <a class="btn OldSkool btn-large btn-info playGame">Play Again</a>
         </div>
     </section>
-    <canvas id="myCanvas">
+    <canvas id="myCanvas" oncontextmenu="return false;">
         This is not working.
     </canvas>
+    <div class="debug" id="console">
+        <pre id="log"></pre>
+    </div>
     <div class="lowerContent content">
         <div class="alert alert-info"><strong>Note:</strong> Need to finish design.</div>
     </div>
