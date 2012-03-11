@@ -94,7 +94,7 @@ $(document).ready(function () {
     /**
      * UI Elements
      */
-    var uiStart = $(".start"), uiPause = $(".paused"), uiOver = $(".gameOver"), playButton = $(".playGame");
+    var uiStart = $(".start"), uiPause = $(".paused"), uiOver = $(".gameOver"), playButton = $(".playGame"), debugUI = $(".debug");
     //sprite.src = '/img/sprite.gif'; // Set source path
     var stats;
 
@@ -113,6 +113,11 @@ $(document).ready(function () {
     // Set spacing to max for now so first structure is sent straight in.
     var spacing = 50;
     var floorHeight = canvasHeight - 49;
+
+    /**
+     * Game Stats
+     */
+    var playTime = 0;
 
     /**
      * Objects
@@ -239,6 +244,9 @@ $(document).ready(function () {
             heart.draw();
             context.fillText("x "+settings.lives, 58, 80);
 
+            var distance = bitwiseRound((moveSpeed/8)*playTime);
+            context.fillText(distance+" M", 20, 110);
+
             // Draw in health(?) and energy when debugging
             if(debug){
                 context.translate(-10, 0);
@@ -251,13 +259,13 @@ $(document).ready(function () {
 
                 //Health
                 context.fillStyle = "#41b75f";
-                context.roundRect(player.pos.x + pos.offsetX, player.pos.y - settings.height - (pos.offsetY + 30), player.settings.health / 2, 5, 2, true, false);
-                context.roundRect(player.pos.x + pos.offsetX, player.pos.y - settings.height - (pos.offsetY + 30), 50, 5, 2, false, true);
+                context.fillRect(player.pos.x + pos.offsetX, player.pos.y - settings.height - (pos.offsetY + 30), player.settings.health / 2, 5);
+                context.strokeRect(player.pos.x + pos.offsetX, player.pos.y - settings.height - (pos.offsetY + 30), 50, 5);
 
                 //Energy
                 context.fillStyle = "#3b7afa";
-                context.roundRect(player.pos.x + pos.offsetX, player.pos.y - settings.height - (pos.offsetY + 20), player.settings.energy / 2, 5, 2, true, false);
-                context.roundRect(player.pos.x + pos.offsetX, player.pos.y - settings.height - (pos.offsetY + 20), 50, 5, 2, false, true);
+                context.fillRect(player.pos.x + pos.offsetX, player.pos.y - settings.height - (pos.offsetY + 20), player.settings.energy / 2, 5);
+                context.strokeRect(player.pos.x + pos.offsetX, player.pos.y - settings.height - (pos.offsetY + 20), 50, 5);
             }
 
         };
@@ -339,12 +347,17 @@ $(document).ready(function () {
                 case "dec":
                     if(settings.lives > 0)settings.lives--;
                     else{
-                        gameOver = true;
-                        playGame = false;
+                        endGame();
+                    }
+                    if(debug){
+                        consoleAppend("-1 Life");
                     }
                     break;
                 case "inc":
                     settings.lives++;
+                    if(debug){
+                        consoleAppend("+1 Life");
+                    }
                     break;
             }
         };
@@ -614,6 +627,9 @@ $(document).ready(function () {
     var heart = new Heart(20, 58);
 
     console.log(blocks.length);
+    if(debug){
+        consoleAppend(blocks.length);
+    }
 
     var clouds = [];
     var cloudCount = 4;
@@ -701,6 +717,8 @@ $(document).ready(function () {
         }
         context.restore();
 
+        //Update Timer
+        playTime++;
     }
 
     /**
@@ -716,7 +734,10 @@ $(document).ready(function () {
             structures.push(
                 new Structure(canvasWidth, floorHeight - 32, ranType, ranLayout, ranWidth, ranHeight)
             );
-            //console.log("Added Structure " + ranLayout);
+
+            if(debug){
+                consoleAppend("Added Structure. Layout :: " + ranLayout);
+            }
             spacing = -(ranWidth * blockSize);
         } else if(spacing < structureSpacing) spacing++;
         if (structures.length >= structureCount) {
@@ -724,7 +745,9 @@ $(document).ready(function () {
                 var structure = structures[i];
                 if (structure.id.blockCount <= 0) {
                     structures.removeByValue(structure);
-                    //console.log("Removed Structure " + i);
+                    if(debug){
+                        consoleAppend("Removed Structure. Array loc. ::  " + i);
+                    }
                 }
             }
         }
@@ -732,39 +755,14 @@ $(document).ready(function () {
 
     /**
      * End the game
+     *
+     * @todo Need to reset playTime somewhere else
      */
     function endGame() {
         playGame = false;
         gameOver = true;
+        playTime = 0;
     }
-
-    CanvasRenderingContext2D.prototype.roundRect =
-
-        function (x, y, width, height, radius, fill, stroke) {
-            if (typeof stroke == "undefined") {
-                stroke = true;
-            }
-            if (typeof radius === "undefined") {
-                radius = 5;
-            }
-            this.beginPath();
-            this.moveTo(x + radius, y);
-            this.lineTo(x + width - radius, y);
-            this.quadraticCurveTo(x + width, y, x + width, y + radius);
-            this.lineTo(x + width, y + height - radius);
-            this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-            this.lineTo(x + radius, y + height);
-            this.quadraticCurveTo(x, y + height, x, y + height - radius);
-            this.lineTo(x, y + radius);
-            this.quadraticCurveTo(x, y, x + radius, y);
-            this.closePath();
-            if (stroke) {
-                this.stroke();
-            }
-            if (fill) {
-                this.fill();
-            }
-        };
 
     /**
      * Turn on debug options and display FPS
@@ -787,6 +785,14 @@ $(document).ready(function () {
         }
     }
 
+    /**
+     * Append messages to a console div.
+     * @param msg
+     */
+    function consoleAppend(msg){
+        $('#log').append("> "+msg+"\n");
+        $('#log').animate({ scrollTop: $('#log').prop("scrollHeight") - $('#log').height() }, 400);
+    }
     /******
      * Controls functions
      ******/
@@ -817,6 +823,39 @@ $(document).ready(function () {
         if (evt.keyCode === 38) upKey = false;
         else if (evt.keyCode === 40) downKey = false;
         if (evt.keyCode === 32) space = false;
+    }
+
+    /**
+     * When the mouse press is up, store the values of x & y of the action.
+     * @param e
+     */
+    function mouseUp(e) {
+        if (!e) var e = event;
+        e.preventDefault();
+
+    }
+
+    /**
+     * If mouse press is down, make store x & y of press.
+     * @param e
+     */
+    function mouseDown(e) {
+        if (!e) var e = event;
+        e.preventDefault();
+        if (e.button == 2) //right click
+        {
+
+            if(debug){
+                consoleAppend("Right Click");
+            }
+        }
+        else //left click
+        {
+            if(debug){
+                consoleAppend("Left Click");
+            }
+        }
+
     }
 
     /**
@@ -942,22 +981,29 @@ $(document).ready(function () {
         } else {
             $(document).keydown(onKeyDown);
             $(document).keyup(onKeyUp);
+            document.getElementById("myCanvas").addEventListener("mousedown", mouseDown, false);
+            //document.getElementById("myCanvas").addEventListener("mousemove", mouseXY, false);
+            document.body.addEventListener("mouseup", mouseUp, false);
         }
     });
 
     function startGame() {
         requestAnimationFrame(startGame);
+
+        if(debug) debugUI.show();
+        else debugUI.hide();
+
         if (playGame) {
             if (pause) {
                 uiPause.show();
             } else {
                 render();
+                timer();
             }
-        } else if (gameOver) {
-            uiOver.show();
-        } else {
-            uiStart.show();
         }
+        else if (gameOver) uiOver.show();
+        else uiStart.show();
+
     }
 
     render();
