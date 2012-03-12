@@ -32,19 +32,45 @@ for optimal performance, create your own custom Modernizr build: www.modernizr.c
 
 <body>
 <div class="container">
+    <header>
+        <nav>
+
+        </nav>
+    </header>
     <div class="higherContent content">
         <div class="title logo logoBlack">Runner Man, Platform Game of Doom!</div>
+    </div>
+    <div class="interface">
+        <section class="options">
+            <ul>
+                <li class="toggleSound">Toggle Sound</li>
+                <li class="toggleFullScreen">Toggle Fullscreen</li>
+                <li class="toggleDebug muted">Debug</li>
+            </ul>
+        </section>
+        <canvas id="myCanvas" oncontextmenu="return false;">
+            This is not working.
+        </canvas>
+
+        <div class="debug" id="console">
+            <pre id="log"></pre>
+        </div>
     </div>
     <section class="menu start">
         <div class="content">
             <div class="logo">Runner Man, Platform Game of Doom!</div>
-            <div class="highScore">0</div>
+            <div><span>High Score: </span><span class="highScore">0 meters</span></div>
             <div class="controls">
                 <ul>
                     <li>Up Arrow / Space = Jump</li>
-                    <!--<li>Left / Right Arrow = Rotate</li> -->
+                    <li>Down Arrow = Slide</li>
                     <li>P = Pause</li>
-                    <li>F1 = Show FPS</li>
+                    <li>F1 = Toggle Debug Mode</li>
+                </ul>
+                <hr />
+                <ul>
+                    <li>Left Mouse Button = Jump</li>
+                    <li>Right Mouse Button = Slide</li>
                 </ul>
             </div>
             <a class="btn OldSkool btn-large btn-info playGame">Play Game</a>
@@ -63,21 +89,37 @@ for optimal performance, create your own custom Modernizr build: www.modernizr.c
             <div class="logo">Runner Man, Platform Game of Doom!</div>
             <h1>Game Over!</h1>
             <div class="scoreIt">
-                <span>Score:</span><span class="scored">0</span>
+                <span>Score:</span><span class="scored">0 meters</span>
                 <div class="newHighScore">New High Score!</div>
             </div>
             <a class="btn OldSkool btn-large btn-info playGame">Play Again</a>
         </div>
     </section>
-    <canvas id="myCanvas" oncontextmenu="return false;">
-        This is not working.
-    </canvas>
-    <div class="debug" id="console">
-        <pre id="log"></pre>
-    </div>
+
     <div class="lowerContent content">
         <div class="alert alert-info"><strong>Note:</strong> Need to finish design.</div>
     </div>
+
+    <!--<audio id="backgroundSound" loop="loop" loop>
+        <source src="assets/background.wav" type="audio/x-wav"/>
+        Your browser does not support the audio tag.
+    </audio>-->
+    <audio id="jumpSound">
+        <source src="assets/jump.wav" type="audio/x-wav" />
+        Your browser does not support the audio tag.
+    </audio>
+    <audio id="hitSound">
+        <source src="assets/hit.wav" type="audio/x-wav" />
+        Your browser does not support the audio tag.
+    </audio>
+    <audio id="coinSound">
+        <source src="assets/coin.wav" type="audio/x-wav" />
+        Your browser does not support the audio tag.
+    </audio>
+    <audio id="levelupSound">
+        <source src="assets/levelup.wav" type="audio/x-wav" />
+        Your browser does not support the audio tag.
+    </audio>
 </div>
 
 <!-- JavaScript at the bottom for fast page loading -->
