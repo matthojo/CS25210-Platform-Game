@@ -94,9 +94,26 @@ $(document).ready(function () {
     /**
      * UI Elements
      */
-    var uiStart = $(".start"), uiPause = $(".paused"), uiOver = $(".gameOver"), playButton = $(".playGame"), debugUI = $(".debug");
-    //sprite.src = '/img/sprite.gif'; // Set source path
+    var uiStart = $(".start"),
+        uiPause = $(".paused"),
+        uiOver = $(".gameOver"),
+        playButton = $(".playGame"),
+        debugUI = $(".debug");
     var stats;
+    var scoreOut = $("#score"),
+        overScoreOut = $(".scored"),
+        highScoreOut = $(".highScore"),
+        newhighScore = $(".newHighScore");
+
+    /**
+     * Sounds
+     */
+    var jumpSound = $("#jumpSound").get(0),
+        coinSound = $("#coinSound").get(0),
+        levelupSound = $("#levelupSound").get(0),
+        hitSound = $("#hitSound").get(0),
+        backgroundSound = $("#backgroundSound").get(0);
+
 
     /**
      * Game UI Settings
@@ -104,6 +121,7 @@ $(document).ready(function () {
     if ("mozImageSmoothingEnabled" in context) {
         context.mozImageSmoothingEnabled = false;
     }
+    updateHighScore();
     var structures = [];
     var structureCount = 4;
     var blocks = [];
@@ -118,6 +136,8 @@ $(document).ready(function () {
      * Game Stats
      */
     var playTime = 0;
+    var distance = 0;
+    var score = 0, highScore = 0;
 
     /**
      * Objects
@@ -150,6 +170,7 @@ $(document).ready(function () {
             draw:draw
         };
     };
+
 
     /**
      * Status: Still = 0
@@ -244,7 +265,7 @@ $(document).ready(function () {
             heart.draw();
             context.fillText("x "+settings.lives, 58, 80);
 
-            var distance = bitwiseRound((moveSpeed/8)*playTime);
+            distance = bitwiseRound((moveSpeed/8)*playTime);
             context.fillText(distance+" M", 20, 110);
 
             // Draw in health(?) and energy when debugging
@@ -311,6 +332,7 @@ $(document).ready(function () {
                     pos.offsetY += settings.jumpSpeed;
                     settings.jumpHeight += settings.jumpSpeed;
                     settings.status = 2;
+                    playSound("jump");
                 } else {
                     movement.jumping = false;
                     if (settings.energy > 0) settings.energy -= 50;
@@ -335,7 +357,10 @@ $(document).ready(function () {
                 }
             }
             if (checkBlockEdge(2) == 2) {
-                if (pos.x + pos.offsetX > 0) pos.offsetX -= moveSpeed;
+                if (pos.x + pos.offsetX > 0){
+                    pos.offsetX -= moveSpeed;
+                    playSound("hit");
+                }
                 else{
                     pos.offsetX = 0;
                     life("dec");
@@ -350,13 +375,13 @@ $(document).ready(function () {
                         endGame();
                     }
                     if(debug){
-                        consoleAppend("-1 Life");
+                        terminalAppend("-1 Life");
                     }
                     break;
                 case "inc":
                     settings.lives++;
                     if(debug){
-                        consoleAppend("+1 Life");
+                        terminalAppend("+1 Life");
                     }
                     break;
             }
@@ -628,7 +653,7 @@ $(document).ready(function () {
 
     console.log(blocks.length);
     if(debug){
-        consoleAppend(blocks.length);
+        terminalAppend(blocks.length);
     }
 
     var clouds = [];
@@ -736,7 +761,7 @@ $(document).ready(function () {
             );
 
             if(debug){
-                consoleAppend("Added Structure. Layout :: " + ranLayout);
+                terminalAppend("Added Structure. Layout :: " + ranLayout);
             }
             spacing = -(ranWidth * blockSize);
         } else if(spacing < structureSpacing) spacing++;
@@ -746,7 +771,7 @@ $(document).ready(function () {
                 if (structure.id.blockCount <= 0) {
                     structures.removeByValue(structure);
                     if(debug){
-                        consoleAppend("Removed Structure. Array loc. ::  " + i);
+                        terminalAppend("Removed Structure. Array loc. ::  " + i);
                     }
                 }
             }
@@ -754,14 +779,72 @@ $(document).ready(function () {
     }
 
     /**
+     * Plays specified sound
+     * @param name
+     */
+    function playSound(name){
+        if (!muted) switch (name) {
+            case "background":
+                backgroundSound.play();
+                break;
+            case "jump":
+                //jumpSound.currentTime = 0;
+                jumpSound.play();
+                break;
+            case "hit":
+                hitSound.play();
+                break;
+            case "coin":
+                coinSound.currentTime = 0;
+                coinSound.play();
+                break;
+            case "levelup":
+                levelupSound.currentTime = 0;
+                levelupSound.play();
+                break;
+            default:
+
+        }
+    }
+
+    /**
      * End the game
-     *
-     * @todo Need to reset playTime somewhere else
      */
     function endGame() {
+        // Move distance to a score
+        score = distance;
+
+        saveHighScore();
+        updateHighScore();
+
+        // Assign score to a temporary var.
+        var tmpScore = score;
+        score = 0;
+        scoreOut.html(score+" meters");
+        overScoreOut.html(tmpScore);
+
         playGame = false;
         gameOver = true;
         playTime = 0;
+    }
+
+    function saveHighScore() {
+        if (Modernizr.localstorage) {
+            if (score > highScore) {
+                terminalAppend("New High Score");
+                localStorage.setItem('highScore', score);
+                newhighScore.show();
+            }
+        }
+    }
+
+    function updateHighScore() {
+        if (Modernizr.localstorage && localStorage.getItem('highScore')) {
+            highScoreOut.text(localStorage.getItem('highScore')+" meters");
+            highScore = localStorage.getItem('highScore');
+        } else {
+            highScoreOut.html("0 meters");
+        }
     }
 
     /**
@@ -770,6 +853,7 @@ $(document).ready(function () {
     function debugMode() {
 
         debug = !debug;
+        if(debug) terminalAppend("DEBUG ENABLED");
         if (!stats) {
             stats = new Stats();
 
@@ -789,7 +873,7 @@ $(document).ready(function () {
      * Append messages to a console div.
      * @param msg
      */
-    function consoleAppend(msg){
+    function terminalAppend(msg){
         $('#log').append("> "+msg+"\n");
         $('#log').animate({ scrollTop: $('#log').prop("scrollHeight") - $('#log').height() }, 400);
     }
@@ -833,6 +917,8 @@ $(document).ready(function () {
         if (!e) var e = event;
         e.preventDefault();
 
+        downKey = upKey = false;
+
     }
 
     /**
@@ -846,14 +932,16 @@ $(document).ready(function () {
         {
 
             if(debug){
-                consoleAppend("Right Click");
+                terminalAppend("Right Click");
             }
+            downKey = true;
         }
         else //left click
         {
             if(debug){
-                consoleAppend("Left Click");
+                terminalAppend("Left Click");
             }
+            upKey = true;
         }
 
     }
@@ -901,7 +989,7 @@ $(document).ready(function () {
     /**
      * When sound button is pressed
      */
-    $('#toggleSound').toggle(function () {
+    $('.toggleSound').toggle(function () {
         muted = true;
         $(this).addClass('muted');
     }, function () {
@@ -912,7 +1000,7 @@ $(document).ready(function () {
     /**
      * When full screen button is pressed
      */
-    $('#toggleFullScreen').toggle(function () {
+    $('.toggleFullScreen').toggle(function () {
         toggleFullScreen();
         $(this).removeClass('fullscreen_alt');
         $(this).addClass('fullscreen_exit_alt');
@@ -920,6 +1008,17 @@ $(document).ready(function () {
         toggleFullScreen();
         $(this).removeClass('fullscreen_exit_alt');
         $(this).addClass('fullscreen_alt');
+    });
+
+    /**
+     * When debug button is pressed
+     */
+    $('.toggleDebug').toggle(function () {
+        debugMode();
+        $(this).removeClass('muted');
+    }, function () {
+        debugMode();
+        $(this).addClass('muted');
     });
 
     /**
