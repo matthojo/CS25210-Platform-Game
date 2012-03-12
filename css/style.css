@@ -1337,12 +1337,29 @@ a:hover {
     color: #005580;
     text-decoration: underline;
 }
-canvas {
-    display: block;
-    border: 1px solid #CCC;
+.interface{
+    position: relative;
+    width: 800px;
+    min-height: 600px;
     margin: 0 auto;
     margin-top: 40px;
     margin-bottom: 20px;
+}
+.options{
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-family: 'SilkscreenNormal', Helvetica Neue,Arial, sans-serif;
+}
+.options ul{
+    list-style: none;
+}
+.options li{
+    cursor: pointer;
+}
+canvas {
+    display: block;
+    border: 1px solid #CCC;
     background: url('../img/background.gif') left top repeat-x;
 }
 audio .sound{display: none;}
@@ -1427,6 +1444,15 @@ audio .sound{display: none;}
 }
 .menu li{
     line-height: 24px;
+}
+.menu .controls{
+    font-size: 12px;
+    margin: 10px 0;
+}
+.controls hr{
+    border-style: dashed;
+    margin: 8px 0;
+
 }
 .menu.start{
     display: block;
