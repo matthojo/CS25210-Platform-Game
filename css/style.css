@@ -147,7 +147,6 @@ textarea {
 }
 p {
     margin: 0 0 9px;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 13px;
     line-height: 18px;
 }
@@ -1344,12 +1343,12 @@ a:hover {
     margin: 0 auto;
     margin-top: 40px;
     margin-bottom: 20px;
+    font-family: 'SilkscreenNormal', Helvetica Neue,Arial, sans-serif;
 }
 .options{
     position: absolute;
     right: 10px;
     top: 10px;
-    font-family: 'SilkscreenNormal', Helvetica Neue,Arial, sans-serif;
 }
 .options ul{
     list-style: none;
@@ -1361,6 +1360,18 @@ canvas {
     display: block;
     border: 1px solid #CCC;
     background: url('../img/background.gif') left top repeat-x;
+}
+.controls hr{
+    border-style: dashed;
+    margin: 8px 0;
+
+}
+.controls{
+    font-size: 12px;
+    margin: 10px 0;
+}
+.right{
+    float: right;
 }
 audio .sound{display: none;}
 
@@ -1418,6 +1429,7 @@ audio .sound{display: none;}
     -moz-box-shadow: inset 0 4px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05),inset 0 -4px 0 rgba(0, 0, 0, 0.2);
     box-shadow: inset 0 4px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05),inset 0 -4px 0 rgba(0, 0, 0, 0.2);
     font-size: 30px;
+    margin: 20px 0 10px;
 }
 .menu .btn.OldSkool:active, .menu .btn.OldSkool.active{
     -webkit-box-shadow: inset 0 -4px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05),inset 0 4px 0 rgba(0, 0, 0, 0.2);
@@ -1445,15 +1457,6 @@ audio .sound{display: none;}
 .menu li{
     line-height: 24px;
 }
-.menu .controls{
-    font-size: 12px;
-    margin: 10px 0;
-}
-.controls hr{
-    border-style: dashed;
-    margin: 8px 0;
-
-}
 .menu.start{
     display: block;
     text-align: center;
@@ -1477,6 +1480,20 @@ audio .sound{display: none;}
     text-transform: uppercase;
     font-weight: normal;
     font-size: 30px;
+}
+.menu p{
+    font-size: 20px;
+    margin: 10px 0;
+}
+.menu p.label{
+    margin-left: 20px;
+    text-align: left;
+}
+.menu p.label.high{
+    color: #eccd07;
+}
+.menu .offline{
+    font-size: 14px;
 }
 .menu.gameOver .scoreIt{
     color: #FFF;

@@ -1,3 +1,10 @@
+<?php
+
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
+include 'php/classes/twitter.php';
+
+?>
 <!doctype html>
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
@@ -43,6 +50,7 @@ for optimal performance, create your own custom Modernizr build: www.modernizr.c
     <div class="interface">
         <section class="options">
             <ul>
+                <li class="togglePause">Pause / View Controls</li>
                 <li class="toggleSound">Toggle Sound</li>
                 <li class="toggleFullScreen">Toggle Fullscreen</li>
                 <li class="toggleDebug muted">Debug</li>
@@ -59,8 +67,29 @@ for optimal performance, create your own custom Modernizr build: www.modernizr.c
     <section class="menu start">
         <div class="content">
             <div class="logo">Runner Man, Platform Game of Doom!</div>
-            <div><span>High Score: </span><span class="highScore">0 meters</span></div>
+            <?php if (isset($_SESSION['access_token'])) : ?>
+                <p class="label">Logged in as:</p>
+                <span><?php echo $username ?></span>
+            <?php endif; ?>
+            <p class="label high">High Score: </p>
+            <span class="highScore">0 meters</span>
+            <?php if (isset($_SESSION['access_token'])) : ?>
+            <a class="btn OldSkool btn-large btn-info playGame">Play Connected</a>
+            <p class="or">or</p>
+            <a href="?wipe=1" class="btn OldSkool btn-large btn-info">Logout</a>
+            <?php else : ?>
+            <a href="?authenticate=1" class="btn OldSkool btn-large btn-info">Login to Play</a>
+            <p class="or">or</p>
+            <a class="btn OldSkool btn-large btn-info playGame">Play Offline</a>
+            <?php endif; ?>
+        </div>
+    </section>
+    <section class="menu paused">
+        <div class="content">
+            <div class="logo">Runner Man, Platform Game of Doom!</div>
+            <h1>Paused</h1>
             <div class="controls">
+                <p class="label">Controls: </p>
                 <ul>
                     <li>Up Arrow / Space = Jump</li>
                     <li>Down Arrow = Slide</li>
@@ -73,14 +102,6 @@ for optimal performance, create your own custom Modernizr build: www.modernizr.c
                     <li>Right Mouse Button = Slide</li>
                 </ul>
             </div>
-            <a class="btn OldSkool btn-large btn-info playGame">Play Game</a>
-        </div>
-    </section>
-    <section class="menu paused">
-        <div class="content">
-            <div class="logo">Runner Man, Platform Game of Doom!</div>
-            <h1>Paused</h1>
-            <h1 class="iconic pause"></h1>
             <a class="btn OldSkool btn-large btn-info playGame">Continue</a>
         </div>
     </section>
@@ -127,7 +148,6 @@ for optimal performance, create your own custom Modernizr build: www.modernizr.c
 <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="js/libs/jquery-1.7.1.min.js"><\/script>')</script>
-
 <!-- scripts concatenated and minified via build script -->
 <script defer src="js/plugins.js"></script>
 <script defer src="js/script.js"></script>
