@@ -98,6 +98,7 @@ $(document).ready(function () {
         uiPause = $(".paused"),
         uiOver = $(".gameOver"),
         playButton = $(".playGame"),
+        exitButton = $(".exitGame"),
         debugUI = $(".debug");
     var stats;
     var scoreOut = $("#score"),
@@ -840,10 +841,10 @@ $(document).ready(function () {
 
     function updateHighScore() {
         if (Modernizr.localstorage && localStorage.getItem('highScore')) {
-            highScoreOut.text(localStorage.getItem('highScore')+" meters");
+            highScoreOut.html(localStorage.getItem('highScore')+" meters <span class='offline'>(offline)</span>");
             highScore = localStorage.getItem('highScore');
         } else {
-            highScoreOut.html("0 meters");
+            highScoreOut.html("0 meters (offline)");
         }
     }
 
@@ -853,7 +854,11 @@ $(document).ready(function () {
     function debugMode() {
 
         debug = !debug;
-        if(debug) terminalAppend("DEBUG ENABLED");
+        if (debug) {
+            terminalAppend("DEBUG ENABLED");
+            $('.toggleDebug').removeClass('muted');
+        } else $('.toggleDebug').addClass('muted');
+
         if (!stats) {
             stats = new Stats();
 
@@ -986,6 +991,21 @@ $(document).ready(function () {
         uiOver.hide();
     }));
 
+    exitButton.on("click touchend", (function (event) {
+        playGame = false;
+        pause = false;
+        gameOver = false;
+        uiStart.show();
+        uiPause.hide();
+        uiOver.hide();
+    }));
+
+    $('.togglePause').toggle(function () {
+        pause = true;
+    }, function () {
+        pause = false;
+    });
+
     /**
      * When sound button is pressed
      */
@@ -1015,10 +1035,8 @@ $(document).ready(function () {
      */
     $('.toggleDebug').toggle(function () {
         debugMode();
-        $(this).removeClass('muted');
     }, function () {
         debugMode();
-        $(this).addClass('muted');
     });
 
     /**
