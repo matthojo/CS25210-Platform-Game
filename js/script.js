@@ -828,8 +828,7 @@ $(document).ready(function () {
         spacing = 50;
         distance = 0;
         score = 0;
-        highScore = 0;
-
+        updateHighScore();
         //Update UI
         scoreOut.html(score+" meters");
 
@@ -848,7 +847,6 @@ $(document).ready(function () {
     function endGame() {
         // Move distance to a score
         score = distance;
-
         saveHighScore();
         updateHighScore();
 
@@ -860,7 +858,6 @@ $(document).ready(function () {
 
         playGame = false;
         gameOver = true;
-        playTime = 0;
     }
 
     function saveHighScore() {
