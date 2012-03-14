@@ -78,7 +78,7 @@ for optimal performance, create your own custom Modernizr build: www.modernizr.c
             <p class="or">or</p>
             <a href="?wipe=1" class="btn OldSkool btn-large btn-info">Logout</a>
             <?php else : ?>
-            <a href="?authenticate=1" class="btn OldSkool btn-large btn-info">Login to Play</a>
+            <a href="?authenticate=1" class="btn OldSkool twitter btn-large btn-info">Login via Twitter to Play</a>
             <p class="or">or</p>
             <a class="btn OldSkool btn-large btn-info playGame">Play Offline</a>
             <?php endif; ?>
@@ -89,7 +89,6 @@ for optimal performance, create your own custom Modernizr build: www.modernizr.c
             <div class="logo">Runner Man, Platform Game of Doom!</div>
             <h1>Paused</h1>
             <div class="controls">
-                <p class="label">Controls: </p>
                 <ul>
                     <li>Up Arrow / Space = Jump</li>
                     <li>Down Arrow = Slide</li>
