@@ -102,7 +102,8 @@ for optimal performance, create your own custom Modernizr build: www.modernizr.c
                     <li>Right Mouse Button = Slide</li>
                 </ul>
             </div>
-            <a class="btn OldSkool btn-large btn-info playGame">Continue</a>
+            <a class="btn OldSkool btn-large btn-info continueGame">Continue</a>
+            <a class="btn OldSkool btn-large btn-info exitGame">Quit Game</a>
         </div>
     </section>
     <section class="menu gameOver">
@@ -114,6 +115,7 @@ for optimal performance, create your own custom Modernizr build: www.modernizr.c
                 <div class="newHighScore">New High Score!</div>
             </div>
             <a class="btn OldSkool btn-large btn-info playGame">Play Again</a>
+            <a class="btn OldSkool btn-large btn-info exitGame">Back to menu</a>
         </div>
     </section>
 

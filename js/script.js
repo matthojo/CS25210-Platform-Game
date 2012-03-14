@@ -98,6 +98,7 @@ $(document).ready(function () {
         uiPause = $(".paused"),
         uiOver = $(".gameOver"),
         playButton = $(".playGame"),
+        continueButton = $(".continueGame"),
         exitButton = $(".exitGame"),
         debugUI = $(".debug");
     var stats;
@@ -387,6 +388,12 @@ $(document).ready(function () {
                     break;
             }
         };
+        var reset = function(){
+            pos.offsetY = 0;
+            settings.lifes = 3;
+            settings.status = 1;
+            settings.coins = 0;
+        };
         return {
             imageStill:imageStill,
             imageRunning:imageRunning,
@@ -399,7 +406,8 @@ $(document).ready(function () {
             drawStats:drawStats,
             check:checkBlockEdge,
             move:move,
-            life:life
+            life:life,
+            reset: reset
         };
     };
 
@@ -809,6 +817,32 @@ $(document).ready(function () {
     }
 
     /**
+     * Reset Game
+     */
+    function resetAll(){
+        playTime = 0;
+        player = new Player(canvasWidth/2, floorHeight);
+        structures = [];
+        blocks  = [];
+        moveSpeed = 4;
+        spacing = 50;
+        distance = 0;
+        score = 0;
+        highScore = 0;
+
+        //Update UI
+        scoreOut.html(score+" meters");
+
+        // Clear the frame
+        context.save();
+        context.clearRect(0, 0, canvasWidth, canvasHeight);
+        context.restore();
+
+        if(debug){
+            terminalAppend("Reset Stats");
+        }
+    }
+    /**
      * End the game
      */
     function endGame() {
@@ -882,6 +916,107 @@ $(document).ready(function () {
         $('#log').append("> "+msg+"\n");
         $('#log').animate({ scrollTop: $('#log').prop("scrollHeight") - $('#log').height() }, 400);
     }
+
+    /**
+     * When play button is pressed
+     */
+    playButton.on("click touchend", (function (event) {
+        resetAll();
+        playGame = true;
+        pause = false;
+        gameOver = false;
+        uiStart.hide();
+        uiPause.hide();
+        uiOver.hide();
+    }));
+
+    /**
+     * When play button is pressed
+     */
+    continueButton.on("click touchend", (function (event) {
+        playGame = true;
+        pause = false;
+        gameOver = false;
+        uiStart.hide();
+        uiPause.hide();
+        uiOver.hide();
+    }));
+
+    exitButton.on("click touchend", (function (event) {
+        resetAll();
+        playGame = false;
+        pause = false;
+        gameOver = false;
+        uiStart.show();
+        uiPause.hide();
+        uiOver.hide();
+    }));
+
+    $('.togglePause').toggle(function () {
+        pause = true;
+    }, function () {
+        pause = false;
+    });
+
+    /**
+     * When sound button is pressed
+     */
+    $('.toggleSound').toggle(function () {
+        muted = true;
+        $(this).addClass('muted');
+    }, function () {
+        muted = false;
+        $(this).removeClass('muted');
+    });
+
+    /**
+     * When full screen button is pressed
+     */
+    $('.toggleFullScreen').toggle(function () {
+        toggleFullScreen();
+        $(this).removeClass('fullscreen_alt');
+        $(this).addClass('fullscreen_exit_alt');
+    }, function () {
+        toggleFullScreen();
+        $(this).removeClass('fullscreen_exit_alt');
+        $(this).addClass('fullscreen_alt');
+    });
+
+    /**
+     * When debug button is pressed
+     */
+    $('.toggleDebug').toggle(function () {
+        debugMode();
+    }, function () {
+        debugMode();
+    });
+
+    /**
+     * This puts the viewport into true fullscreen mode
+     * NOTE: Only supported by some broswers
+     * Code is taken from Firefox online Fullscreen API documentation
+     */
+    function toggleFullScreen() {
+        if ((document.fullScreenElement && document.fullScreenElement !== null) || // alternative standard method
+            (!document.mozFullScreen && !document.webkitIsFullScreen)) {               // current working methods
+            if (document.documentElement.requestFullScreen) {
+                document.documentElement.requestFullScreen();
+            } else if (document.documentElement.mozRequestFullScreen) {
+                document.documentElement.mozRequestFullScreen();
+            } else if (document.documentElement.webkitRequestFullScreen) {
+                document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+            }
+        } else {
+            if (document.cancelFullScreen) {
+                document.cancelFullScreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.webkitCancelFullScreen) {
+                document.webkitCancelFullScreen();
+            }
+        }
+    }
+
     /******
      * Controls functions
      ******/
@@ -977,92 +1112,6 @@ $(document).ready(function () {
     function onTouchEnd(e) {
         touches = e.touches;
         upKey = false;
-    }
-
-    /**
-     * When play button is pressed
-     */
-    playButton.on("click touchend", (function (event) {
-        playGame = true;
-        pause = false;
-        gameOver = false;
-        uiStart.hide();
-        uiPause.hide();
-        uiOver.hide();
-    }));
-
-    exitButton.on("click touchend", (function (event) {
-        playGame = false;
-        pause = false;
-        gameOver = false;
-        uiStart.show();
-        uiPause.hide();
-        uiOver.hide();
-    }));
-
-    $('.togglePause').toggle(function () {
-        pause = true;
-    }, function () {
-        pause = false;
-    });
-
-    /**
-     * When sound button is pressed
-     */
-    $('.toggleSound').toggle(function () {
-        muted = true;
-        $(this).addClass('muted');
-    }, function () {
-        muted = false;
-        $(this).removeClass('muted');
-    });
-
-    /**
-     * When full screen button is pressed
-     */
-    $('.toggleFullScreen').toggle(function () {
-        toggleFullScreen();
-        $(this).removeClass('fullscreen_alt');
-        $(this).addClass('fullscreen_exit_alt');
-    }, function () {
-        toggleFullScreen();
-        $(this).removeClass('fullscreen_exit_alt');
-        $(this).addClass('fullscreen_alt');
-    });
-
-    /**
-     * When debug button is pressed
-     */
-    $('.toggleDebug').toggle(function () {
-        debugMode();
-    }, function () {
-        debugMode();
-    });
-
-    /**
-     * This puts the viewport into true fullscreen mode
-     * NOTE: Only supported by some broswers
-     * Code is taken from Firefox online Fullscreen API documentation
-     */
-    function toggleFullScreen() {
-        if ((document.fullScreenElement && document.fullScreenElement !== null) || // alternative standard method
-            (!document.mozFullScreen && !document.webkitIsFullScreen)) {               // current working methods
-            if (document.documentElement.requestFullScreen) {
-                document.documentElement.requestFullScreen();
-            } else if (document.documentElement.mozRequestFullScreen) {
-                document.documentElement.mozRequestFullScreen();
-            } else if (document.documentElement.webkitRequestFullScreen) {
-                document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
-            }
-        } else {
-            if (document.cancelFullScreen) {
-                document.cancelFullScreen();
-            } else if (document.mozCancelFullScreen) {
-                document.mozCancelFullScreen();
-            } else if (document.webkitCancelFullScreen) {
-                document.webkitCancelFullScreen();
-            }
-        }
     }
 
 
