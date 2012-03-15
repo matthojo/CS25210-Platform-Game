@@ -16,7 +16,6 @@ Array.prototype.removeByValue = function (val) {
         }
     }
 };
-
 $(document).ready(function () {
 
     // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -105,7 +104,9 @@ $(document).ready(function () {
     var scoreOut = $("#score"),
         overScoreOut = $(".scored"),
         highScoreOut = $(".highScore"),
-        newhighScore = $(".newHighScore");
+        newhighScore = $(".newHighScore"),
+        updatingScores = $(".updatingScores"),
+        highList = $(".highList");
 
     /**
      * Sounds
@@ -868,6 +869,9 @@ $(document).ready(function () {
                 newhighScore.show();
             }
         }
+        if(connected){
+            updateOnlineScore();
+        }
     }
 
     function updateHighScore() {
@@ -877,7 +881,43 @@ $(document).ready(function () {
         } else {
             highScoreOut.html("0 meters (offline)");
         }
+        if(connected){
+            $.ajax({
+                type: "POST",
+                data: "name="+twitter_username,
+                url: "php/ajax/getHighScore.php",
+                success: function(html){
+                    highScoreOut.html(html+" meters <span class='offline'>(online)</span>");
+                }
+            });
+        }
     }
+
+    function updateOnlineScore(){
+        updatingScores.show();
+        $.ajax({
+            type: "POST",
+            data: "score="+score+"&name="+twitter_username,
+            url: "php/ajax/sendScore.php",
+            success: function(html){
+                if(html != "Failed" || html != "Invalid data"){
+                    terminalAppend("SUBMITTED TO ONLINE HIGHSCORE!");
+                    updatingScores.hide();
+                    highList.html(html);
+                    /*$.ajax({
+                           url: "php/ajax/updateScores.php",
+                           success: function(html){
+                               highList.html(html);
+                           }
+                        });*/
+                }
+            }
+
+        });
+        if(debug) terminalAppend("Updating Online Scores");
+    }
+
+    if(connected) terminalAppend("Twitter Username: "+twitter_username);
 
     /**
      * Turn on debug options and display FPS

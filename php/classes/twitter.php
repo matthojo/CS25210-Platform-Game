@@ -44,7 +44,6 @@ function outputError($tmhOAuth) {
     echo 'Error: ' . $tmhOAuth->response['response'] . PHP_EOL;
     tmhUtilities::pr($tmhOAuth);
 }
-
 // reset request?
 if ( isset($_REQUEST['wipe'])) {
     session_destroy();

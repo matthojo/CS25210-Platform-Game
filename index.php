@@ -2,8 +2,9 @@
 
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
+include 'php/settings.php';
 include 'php/classes/twitter.php';
-
+include 'php/classes/functions.php';
 ?>
 <!doctype html>
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
@@ -47,77 +48,87 @@ for optimal performance, create your own custom Modernizr build: www.modernizr.c
     <div class="higherContent content">
         <div class="title logo logoBlack">Runner Man, Platform Game of Doom!</div>
     </div>
-    <div class="interface">
-        <section class="options">
-            <ul>
-                <li class="togglePause">Pause / View Controls</li>
-                <li class="toggleSound">Toggle Sound</li>
-                <li class="toggleFullScreen">Toggle Fullscreen</li>
-                <li class="toggleDebug muted">Debug</li>
-            </ul>
-        </section>
-        <canvas id="myCanvas" oncontextmenu="return false;">
-            This is not working.
-        </canvas>
-
-        <div class="debug" id="console">
-            <pre id="log"></pre>
+    <div class="middleContent content">
+        <div class="highTable">
+            <h3>Online High Scores</h3>
+            <ol class="highList">
+                <?php getScores(); ?>
+            </ol>
         </div>
+        <div class="interface">
+            <section class="options">
+                <ul>
+                    <li class="togglePause">Pause / View Controls</li>
+                    <li class="toggleSound">Toggle Sound</li>
+                    <li class="toggleFullScreen">Toggle Fullscreen</li>
+                    <li class="toggleDebug muted">Debug</li>
+                </ul>
+            </section>
+            <canvas id="myCanvas" oncontextmenu="return false;">
+                This is not working.
+            </canvas>
+
+            <div class="debug" id="console">
+                <pre id="log"></pre>
+            </div>
+
+            <section class="menu start">
+                <div class="content">
+                    <div class="logo">Runner Man, Platform Game of Doom!</div>
+                    <?php if (isset($_SESSION['access_token'])) : ?>
+                    <p class="label">Logged in as:</p>
+                    <span class="twitter_username"><?php echo $username ?></span>
+                    <?php endif; ?>
+                    <p class="label high">High Score: </p>
+                    <span class="highScore">0 meters</span>
+                    <?php if (isset($_SESSION['access_token'])) : ?>
+                    <a class="btn OldSkool btn-large btn-info playGame">Play Connected</a>
+                    <p class="or">or</p>
+                    <a href="?wipe=1" class="btn OldSkool btn-large btn-info">Logout</a>
+                    <?php else : ?>
+                    <a href="?authenticate=1" class="btn OldSkool twitter btn-large btn-info">Login via Twitter to Play</a>
+                    <p class="or">or</p>
+                    <a class="btn OldSkool btn-large btn-info playGame">Play Offline</a>
+                    <?php endif; ?>
+                </div>
+            </section>
+            <section class="menu paused">
+                <div class="content">
+                    <div class="logo">Runner Man, Platform Game of Doom!</div>
+                    <h1>Paused</h1>
+                    <div class="controls">
+                        <ul>
+                            <li>Up Arrow / Space = Jump</li>
+                            <li>Down Arrow = Slide</li>
+                            <li>P = Pause</li>
+                            <li>F1 = Toggle Debug Mode</li>
+                        </ul>
+                        <hr />
+                        <ul>
+                            <li>Left Mouse Button = Jump</li>
+                            <li>Right Mouse Button = Slide</li>
+                        </ul>
+                    </div>
+                    <a class="btn OldSkool btn-large btn-info continueGame">Continue</a>
+                    <a class="btn OldSkool btn-large btn-info exitGame">Quit Game</a>
+                </div>
+            </section>
+            <section class="menu gameOver">
+                <div class="content">
+                    <div class="logo">Runner Man, Platform Game of Doom!</div>
+                    <h1>Game Over!</h1>
+                    <div class="scoreIt">
+                        <span class="updatingScores" style="display: none">UPDATING HIGH SCORES</span>
+                        <span>Score:</span><span class="scored">0 meters</span>
+                        <div class="newHighScore">New High Score!</div>
+                    </div>
+                    <a class="btn OldSkool btn-large btn-info playGame">Play Again</a>
+                    <a class="btn OldSkool btn-large btn-info exitGame">Back to menu</a>
+                </div>
+            </section>
+        </div>
+        <div class="clearfix"></div>
     </div>
-    <section class="menu start">
-        <div class="content">
-            <div class="logo">Runner Man, Platform Game of Doom!</div>
-            <?php if (isset($_SESSION['access_token'])) : ?>
-                <p class="label">Logged in as:</p>
-                <span><?php echo $username ?></span>
-            <?php endif; ?>
-            <p class="label high">High Score: </p>
-            <span class="highScore">0 meters</span>
-            <?php if (isset($_SESSION['access_token'])) : ?>
-            <a class="btn OldSkool btn-large btn-info playGame">Play Connected</a>
-            <p class="or">or</p>
-            <a href="?wipe=1" class="btn OldSkool btn-large btn-info">Logout</a>
-            <?php else : ?>
-            <a href="?authenticate=1" class="btn OldSkool twitter btn-large btn-info">Login via Twitter to Play</a>
-            <p class="or">or</p>
-            <a class="btn OldSkool btn-large btn-info playGame">Play Offline</a>
-            <?php endif; ?>
-        </div>
-    </section>
-    <section class="menu paused">
-        <div class="content">
-            <div class="logo">Runner Man, Platform Game of Doom!</div>
-            <h1>Paused</h1>
-            <div class="controls">
-                <ul>
-                    <li>Up Arrow / Space = Jump</li>
-                    <li>Down Arrow = Slide</li>
-                    <li>P = Pause</li>
-                    <li>F1 = Toggle Debug Mode</li>
-                </ul>
-                <hr />
-                <ul>
-                    <li>Left Mouse Button = Jump</li>
-                    <li>Right Mouse Button = Slide</li>
-                </ul>
-            </div>
-            <a class="btn OldSkool btn-large btn-info continueGame">Continue</a>
-            <a class="btn OldSkool btn-large btn-info exitGame">Quit Game</a>
-        </div>
-    </section>
-    <section class="menu gameOver">
-        <div class="content">
-            <div class="logo">Runner Man, Platform Game of Doom!</div>
-            <h1>Game Over!</h1>
-            <div class="scoreIt">
-                <span>Score:</span><span class="scored">0 meters</span>
-                <div class="newHighScore">New High Score!</div>
-            </div>
-            <a class="btn OldSkool btn-large btn-info playGame">Play Again</a>
-            <a class="btn OldSkool btn-large btn-info exitGame">Back to menu</a>
-        </div>
-    </section>
-
     <div class="lowerContent content">
         <div class="alert alert-info"><strong>Note:</strong> Need to finish design.</div>
     </div>
@@ -151,6 +162,14 @@ for optimal performance, create your own custom Modernizr build: www.modernizr.c
 <script>window.jQuery || document.write('<script src="js/libs/jquery-1.7.1.min.js"><\/script>')</script>
 <!-- scripts concatenated and minified via build script -->
 <script defer src="js/plugins.js"></script>
+<script>
+    <?php if (isset($_SESSION['access_token'])) : ?>
+        var connected = true;
+        var twitter_username = $('.twitter_username').text();
+    <?php else : ?>
+        var connected = false;
+    <?php endif; ?>
+</script>
 <script defer src="js/script.js"></script>
 <!-- end scripts -->
 
