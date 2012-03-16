@@ -128,6 +128,7 @@ $(document).ready(function () {
     var structures = [];
     var structureCount = 4;
     var blocks = [];
+    var coins = [];
     var moveSpeed = 4;
     var blockSize = 32;
     var structureSpacing = 50;
@@ -323,6 +324,22 @@ $(document).ready(function () {
                         }
                     }
                     break;
+                case 4:
+                    //Coins
+                    for(var i = 0; i< coins.length; i++){
+                        var coinBlock = coins[i];
+                        if ((pos.x + pos.offsetX- settings.width) <= coinBlock.pos.x + coinBlock.settings.width &&
+                            (pos.x + pos.offsetX) >= coinBlock.pos.x &&
+                            (pos.y - settings.height - pos.offsetY)  <= coinBlock.pos.y + coinBlock.settings.height &&
+                            pos.y >= coinBlock.pos.y ) {
+                            settings.coins++;
+                            coinBlock.settings.owner.blockCount--;
+                            coins.removeByValue(coinBlock);
+                            coinSound.play();
+
+                        }
+                    }
+                    break;
                 default:
                     connect = 0;
             }
@@ -412,18 +429,26 @@ $(document).ready(function () {
         };
     };
 
-    Coin = function (x, y) {
+    Coin = function (x, y, owner) {
         var image = {x:16, y:0, w:16, h:16};
         var pos = {x:x, y:y};
-        var settings = {width:32, height:32};
+        var settings = {width:32, height:32, owner:owner};
         var draw = function () {
             sprite.draw(image.x, image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+        };
+        var checkEdge = function () {
+            return !(pos.x <= 0 - settings.width || pos.y <= 0 - settings.height);
+        };
+        var move = function () {
+            pos.x -= moveSpeed;
         };
         return {
             image:image,
             settings:settings,
             pos:pos,
-            draw:draw
+            draw:draw,
+            check:checkEdge,
+            move:move
         };
     };
 
@@ -549,6 +574,20 @@ $(document).ready(function () {
                 id.blockCount = layout.blockCount;
                 break;
             case 5:
+                //Coins
+                var numWide = nW;
+                var numHigh = nH;
+                for (var i = 0; i < numWide; i++) {
+                    // ADD ROWS
+                    for (var j = 0; j < numHigh; j++) {
+                        // ADD COLS
+                        coins.push(new Coin(pos.x + (i * blockSize), pos.y - ((j * blockSize) + offset), id));
+                        layout.blockCount++;
+                    }
+                }
+                id.blockCount = layout.blockCount;
+                break;
+            case 6:
                 // Block Custom Steps Right
                 var numWide = nW;
                 var numHigh = nH;
@@ -714,6 +753,14 @@ $(document).ready(function () {
             }
         }
 
+        // Check Coins
+        if(coins.length > 0){
+            player.check(4);
+        }
+        if(player.settings.coins == 20){
+            player.life("inc");
+            player.settings.coins = 0;
+        }
         //Draw Clouds
         context.save();
         for (var i = 0; i < clouds.length; i++) {
@@ -750,6 +797,17 @@ $(document).ready(function () {
                 else block.move();
             }
         }
+        for (var i = 0; i < coins.length; i++) {
+            var coinBlock = coins[i];
+            if (coinBlock) {
+                coinBlock.draw();
+                if (!coinBlock.check()) {
+                    coinBlock.settings.owner.blockCount--;
+                    coins.removeByValue(coinBlock);
+                }
+                else coinBlock.move();
+            }
+        }
         context.restore();
 
         //Update Timer
@@ -763,7 +821,7 @@ $(document).ready(function () {
     function addRemoveStructures() {
         if (structures.length < structureCount && spacing == structureSpacing) {
             var ranType = randomFromTo(1, 3);
-            var ranLayout = bitwiseRound(Math.random() * 4);
+            var ranLayout = bitwiseRound(Math.random() * 5);
             var ranHeight = bitwiseRound(Math.random() * 4);
             var ranWidth = bitwiseRound(Math.random() * 4);
             structures.push(
@@ -1201,7 +1259,6 @@ $(document).ready(function () {
                 uiPause.show();
             } else {
                 render();
-                timer();
             }
         }
         else if (gameOver) uiOver.show();
