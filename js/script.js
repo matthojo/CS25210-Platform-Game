@@ -129,7 +129,7 @@ $(document).ready(function () {
     var structureCount = 4;
     var blocks = [];
     var coins = [];
-    var moveSpeed = 4;
+    var moveSpeed = 4+(bitwiseRound(distance/500));
     var blockSize = 32;
     var structureSpacing = 50;
     // Set spacing to max for now so first structure is sent straight in.
@@ -667,7 +667,7 @@ $(document).ready(function () {
         } else {
             image.y = 0
         }
-        var pos = {x:x, y:y, offsetx:0, offsety:0, speed:0.2};
+        var pos = {x:x, y:y, offsetx:0, offsety:0, speed:moveSpeed/10};
         var settings = {width:81, height:42};
         var draw = function () {
             sprite.draw(image.x, image.y, image.w, image.h, pos.x + pos.offsetx, pos.y + pos.offsety, settings.width, settings.height);
@@ -1112,6 +1112,11 @@ $(document).ready(function () {
         }
     }
 
+    function outOfFocus() {
+        if(playGame) pause = true;
+        if(debug) terminalAppend("Window went out of focus");
+    }
+
     /******
      * Controls functions
      ******/
@@ -1245,6 +1250,12 @@ $(document).ready(function () {
             document.getElementById("myCanvas").addEventListener("mousedown", mouseDown, false);
             //document.getElementById("myCanvas").addEventListener("mousemove", mouseXY, false);
             document.body.addEventListener("mouseup", mouseUp, false);
+
+            if (/*@cc_on!@*/false) { // check for Internet Explorer
+                document.onfocusout = outOfFocus;
+            } else {
+                window.onblur = outOfFocus;
+            }
         }
     });
 
