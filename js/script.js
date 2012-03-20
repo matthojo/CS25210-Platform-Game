@@ -121,6 +121,7 @@ $(document).ready(function () {
     /**
      * Game UI Settings
      */
+    // Avoids blurring of edges
     if ("mozImageSmoothingEnabled" in context) {
         context.mozImageSmoothingEnabled = false;
     }
@@ -696,7 +697,7 @@ $(document).ready(function () {
      * Create object instances
      */
     var sprite = new Sprites();
-    var player = new Player(canvasWidth/2, floorHeight);
+    var player = new Player(canvasWidth-canvasWidth/4, floorHeight);
     var coin = new Coin(20, 20);
     var heart = new Heart(20, 58);
 
@@ -786,8 +787,7 @@ $(document).ready(function () {
         //Draw structures
         context.save();
         addRemoveStructures();
-        for (var i = 0; i < blocks.length; i++) {
-            var block = blocks[i];
+        blocks.forEach(function(block) {
             if (block) {
                 block.draw();
                 if (!block.check()) {
@@ -796,9 +796,9 @@ $(document).ready(function () {
                 }
                 else block.move();
             }
-        }
-        for (var i = 0; i < coins.length; i++) {
-            var coinBlock = coins[i];
+        });
+
+        coins.forEach(function(coinBlock) {
             if (coinBlock) {
                 coinBlock.draw();
                 if (!coinBlock.check()) {
@@ -807,7 +807,7 @@ $(document).ready(function () {
                 }
                 else coinBlock.move();
             }
-        }
+        });
         context.restore();
 
         //Update Timer
@@ -822,27 +822,26 @@ $(document).ready(function () {
         if (structures.length < structureCount && spacing == structureSpacing) {
             var ranType = randomFromTo(1, 3);
             var ranLayout = bitwiseRound(Math.random() * 5);
-            var ranHeight = bitwiseRound(Math.random() * 4);
-            var ranWidth = bitwiseRound(Math.random() * 4);
+            var ranHeight = bitwiseRound(Math.random() * 8);
+            var ranWidth = bitwiseRound(Math.random() * 8);
             structures.push(
                 new Structure(canvasWidth, floorHeight - 32, ranType, ranLayout, ranWidth, ranHeight)
             );
 
             if(debug){
-                terminalAppend("Added Structure. Layout :: " + ranLayout);
+                terminalAppend("Added Structure. Layout :: " + ranLayout+", Block Count ::"+(ranWidth*ranHeight)+"("+ranWidth+"x"+ranHeight+")");
             }
             spacing = -(ranWidth * blockSize);
         } else if(spacing < structureSpacing) spacing++;
         if (structures.length >= structureCount) {
-            for (var i = 0; i < structures.length; i++) {
-                var structure = structures[i];
+            structures.forEach(function(structure){
                 if (structure.id.blockCount <= 0) {
                     structures.removeByValue(structure);
                     if(debug){
                         terminalAppend("Removed Structure. Array loc. ::  " + i);
                     }
                 }
-            }
+            });
         }
     }
 
