@@ -72,9 +72,16 @@ $(document).ready(function () {
     var context = canvas.get(0).getContext("2d");
     var canvasWidth = 800;
     var canvasHeight = 600;
-
-    canvas.attr("width", canvasWidth);
-    canvas.attr("height", canvasHeight);
+    if(touchable){
+        canvas.attr("width", $(window).get(0).innerWidth);
+        canvas.attr("height", $(window).get(0).innerHeight);
+        canvas.attr("position", "absolute");
+        canvas.attr("top", 0);
+        canvas.attr("left", 0);
+    }else{
+        canvas.attr("width", canvasWidth);
+        canvas.attr("height", canvasHeight);
+    }
 
     /**
      * Movement settings
@@ -107,7 +114,6 @@ $(document).ready(function () {
         newhighScore = $(".newHighScore"),
         updatingScores = $(".updatingScores"),
         highList = $(".highList");
-
     /**
      * Sounds
      */
@@ -1206,7 +1212,9 @@ $(document).ready(function () {
     function onTouchStart(e){
         e.preventDefault();
         touches = e.touches;
-        upKey = true;
+        if(touches.length > 1){
+            downKey = true;
+        }else upKey = true;
     }
 
     /**
@@ -1225,6 +1233,7 @@ $(document).ready(function () {
     function onTouchEnd(e){
         touches = e.touches;
         upKey = false;
+        downKey = false;
     }
 
 
@@ -1255,13 +1264,12 @@ $(document).ready(function () {
             window.document.addEventListener('touchstart', onTouchStart, false);
             window.document.addEventListener('touchmove', onTouchMove, false);
             window.document.addEventListener('touchend', onTouchEnd, false);
-            window.document.addEventListener("orientationChanged", draw);
+            window.document.addEventListener("orientationChanged", render);
             window.document.addEventListener("touchcancel", onTouchEnd, false);
         } else{
             $(document).keydown(onKeyDown);
             $(document).keyup(onKeyUp);
             document.getElementById("myCanvas").addEventListener("mousedown", mouseDown, false);
-            //document.getElementById("myCanvas").addEventListener("mousemove", mouseXY, false);
             document.body.addEventListener("mouseup", mouseUp, false);
 
             if (/*@cc_on!@*/false){ // check for Internet Explorer
