@@ -97,6 +97,14 @@ $(document).ready(function () {
      */
     var playGame = false, pause = false, gameOver = false, muted = false, debug = false;
 
+
+    /**
+     * Game Stats
+     */
+    var playTime = 0;
+    var distance = 0;
+    var score = 0, highScore = 0, level = 1;
+
     /**
      * UI Elements
      */
@@ -136,20 +144,13 @@ $(document).ready(function () {
     var structureCount = 4;
     var blocks = [];
     var coins = [];
-    var moveSpeed = 4 + (bitwiseRound(distance / 500));
+    var moveSpeed = 4;
     var blockSize = 32;
     var structureSpacing = 50;
     // Set spacing to max for now so first structure is sent straight in.
     var spacing = 50;
     var floorHeight = canvasHeight - 49;
     var initialPlayerLocation = canvasWidth - (canvasWidth / 4);
-
-    /**
-     * Game Stats
-     */
-    var playTime = 0;
-    var distance = 0;
-    var score = 0, highScore = 0;
 
     /**
      * Objects
@@ -321,9 +322,9 @@ $(document).ready(function () {
                     // Left edge
                     for (var i = 0; i < blocks.length; i++){
                         var block = blocks[i];
-                        if ((pos.x + pos.offsetX) == block.pos.x
-                            && block.pos.y + block.settings.height > pos.y - settings.height - pos.offsetY
-                            && block.pos.y - (pos.y - settings.height - pos.offsetY) < settings.height - 4){
+                        if ((pos.x + pos.offsetX) == block.pos.x &&
+                            block.pos.y + block.settings.height > pos.y - settings.height - pos.offsetY &&
+                            block.pos.y - (pos.y - settings.height - pos.offsetY) < settings.height - 4){
                             connect = 2;
                         }
                     }
@@ -399,7 +400,7 @@ $(document).ready(function () {
             }
             if (checkBlockEdge(2) == 2){
                 // Pushed
-                if (pos.x + pos.offsetX > 1){
+                if (pos.x + pos.offsetX > 4){
                     pos.offsetX -= moveSpeed;
                     playSound("hit");
                 }
@@ -666,7 +667,8 @@ $(document).ready(function () {
             }
         };
         var checkEdge = function (){
-            return !(pos.x <= 0 - (settings.width*2) || pos.y <= 0 - settings.height);
+            //4 * block width, so left hand side bug is fixed.
+            return !(pos.x <= 0 - ((settings.width*4)+(settings.width/2))|| pos.y <= 0 - settings.height);
         };
         var move = function (){
             pos.x -= moveSpeed;
@@ -745,6 +747,11 @@ $(document).ready(function () {
         context.clearRect(0, 0, canvasWidth, canvasHeight);
         context.restore();
 
+        // Levels
+
+        if(level < 8){
+            level =  bitwiseRound(distance/500);
+        }
         // Do something if key is pressed
         if (touchable && touches.length > 0){
         }
@@ -848,8 +855,8 @@ $(document).ready(function () {
         if (structures.length < structureCount && spacing == structureSpacing){
             var ranType = randomFromTo(1, 3);
             var ranLayout = bitwiseRound(Math.random() * 5);
-            var ranHeight = bitwiseRound(Math.random() * 8);
-            var ranWidth = bitwiseRound(Math.random() * 8);
+            var ranHeight = bitwiseRound(Math.random() * level);
+            var ranWidth = bitwiseRound(Math.random() * level);
             structures.push(
                 new Structure(canvasWidth, floorHeight - 32, ranType, ranLayout, ranWidth, ranHeight)
             );
@@ -1030,6 +1037,18 @@ $(document).ready(function () {
         }
     }
 
+    function toggleSound(){
+        if(!muted){
+            muted = true;
+            $('.toggleSound').addClass('muted');
+            if(debug) terminalAppend("Sound Off");
+        }else{
+            muted = false;
+            $('.toggleSound').removeClass('muted');
+            if(debug) terminalAppend("Sound On");
+        }
+    }
+
     /**
      * Append messages to a console div.
      * @param msg
@@ -1083,13 +1102,7 @@ $(document).ready(function () {
     /**
      * When sound button is pressed
      */
-    $('.toggleSound').toggle(function (){
-        muted = true;
-        $(this).addClass('muted');
-    }, function (){
-        muted = false;
-        $(this).removeClass('muted');
-    });
+    $('.toggleSound').on("click touchend", toggleSound);
 
     /**
      * When full screen button is pressed
@@ -1161,6 +1174,8 @@ $(document).ready(function () {
         if (evt.keyCode === 32) space = true;
         if (evt.keyCode === 112) debugMode();
         if (evt.keyCode === 80) if (!pause)pause = true;
+        if(evt.keyCode == 83) toggleSound();
+
 
     }
 
