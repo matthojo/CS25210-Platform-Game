@@ -146,9 +146,9 @@ $(document).ready(function () {
     var coins = [];
     var moveSpeed = 4;
     var blockSize = 32;
-    var structureSpacing = 50;
+    var structureSpacing = 30;
     // Set spacing to max for now so first structure is sent straight in.
-    var spacing = 50;
+    var spacing = 30;
     var floorHeight = canvasHeight - 49;
     var initialPlayerLocation = canvasWidth - (canvasWidth / 4);
 
@@ -750,7 +750,7 @@ $(document).ready(function () {
         // Levels
 
         if(level < 8){
-            level =  bitwiseRound(distance/500);
+            level =  bitwiseRound(distance/125);
         }
         // Do something if key is pressed
         if (touchable && touches.length > 0){
@@ -852,7 +852,7 @@ $(document).ready(function () {
      * Removes structures if they contain no blocks.
      */
     function addRemoveStructures(){
-        if (structures.length < structureCount && spacing == structureSpacing){
+        if (structures.length < structureCount && spacing >= structureSpacing){
             var ranType = randomFromTo(1, 3);
             var ranLayout = bitwiseRound(Math.random() * 5);
             var ranHeight = bitwiseRound(Math.random() * level);
@@ -864,7 +864,7 @@ $(document).ready(function () {
             if (debug){
                 terminalAppend("Added Structure. Layout :: " + ranLayout + ", Block Count ::" + (ranWidth * ranHeight) + "(" + ranWidth + "x" + ranHeight + ")");
             }
-            spacing = -(ranWidth * blockSize);
+            spacing -= ranWidth * blockSize;
         } else if (spacing < structureSpacing) spacing++;
         if (structures.length >= structureCount){
             for (var i = 0; i < structures.length; i++){
