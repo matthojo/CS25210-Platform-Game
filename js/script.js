@@ -309,7 +309,10 @@ $(document).ready(function () {
                     // Top
                     for (var i = 0; i < blocks.length; i++){
                         var block = blocks[i];
-                        if ((pos.y - pos.offsetY) == block.pos.y && (pos.x + pos.offsetX) >= block.pos.x && block.pos.x - pos.x - settings.width + pos.offsetX < settings.width && block.pos.x + block.settings.width > pos.x - settings.width + pos.offsetX){
+                        if ((pos.y - pos.offsetY) == block.pos.y &&
+                            (pos.x + pos.offsetX) >= block.pos.x &&
+                            block.pos.x - pos.x - settings.width + pos.offsetX < settings.width &&
+                            block.pos.x + block.settings.width > pos.x - settings.width + pos.offsetX){
                             connect = 1;
                         }
                     }
@@ -318,7 +321,9 @@ $(document).ready(function () {
                     // Left edge
                     for (var i = 0; i < blocks.length; i++){
                         var block = blocks[i];
-                        if ((pos.x + pos.offsetX) == block.pos.x && block.pos.y + block.settings.height > pos.y - settings.height - pos.offsetY && block.pos.y - (pos.y - settings.height - pos.offsetY) < settings.height - 4){
+                        if ((pos.x + pos.offsetX) == block.pos.x
+                            && block.pos.y + block.settings.height > pos.y - settings.height - pos.offsetY
+                            && block.pos.y - (pos.y - settings.height - pos.offsetY) < settings.height - 4){
                             connect = 2;
                         }
                     }
@@ -327,7 +332,10 @@ $(document).ready(function () {
                     // Bottom
                     for (var i = 0; i < blocks.length; i++){
                         var block = blocks[i];
-                        if ((pos.y - settings.height - pos.offsetY) == block.pos.y + block.settings.height && (pos.x + pos.offsetX) >= block.pos.x && block.pos.x - pos.x - settings.width + pos.offsetX < settings.width && block.pos.x + block.settings.width > pos.x - settings.width + pos.offsetX){
+                        if ((pos.y - settings.height - pos.offsetY) == block.pos.y + block.settings.height
+                            && (pos.x + pos.offsetX) >= block.pos.x
+                            && block.pos.x - pos.x - settings.width + pos.offsetX < settings.width
+                            && block.pos.x + block.settings.width > pos.x - settings.width + pos.offsetX){
                             connect = 3;
                         }
                     }
@@ -339,7 +347,7 @@ $(document).ready(function () {
                         if ((pos.x + pos.offsetX - settings.width) <= coinBlock.pos.x + coinBlock.settings.width &&
                             (pos.x + pos.offsetX) >= coinBlock.pos.x &&
                             (pos.y - settings.height - pos.offsetY) <= coinBlock.pos.y + coinBlock.settings.height &&
-                            pos.y >= coinBlock.pos.y){
+                            (pos.y + pos.offsetY) >= coinBlock.pos.y){
                             settings.coins++;
                             coinBlock.settings.owner.blockCount--;
                             coins.removeByValue(coinBlock);
@@ -391,7 +399,7 @@ $(document).ready(function () {
             }
             if (checkBlockEdge(2) == 2){
                 // Pushed
-                if (pos.x + pos.offsetX > 0){
+                if (pos.x + pos.offsetX > 1){
                     pos.offsetX -= moveSpeed;
                     playSound("hit");
                 }
@@ -658,7 +666,7 @@ $(document).ready(function () {
             }
         };
         var checkEdge = function (){
-            return !(pos.x <= 0 - settings.width || pos.y <= 0 - settings.height);
+            return !(pos.x <= 0 - (settings.width*2) || pos.y <= 0 - settings.height);
         };
         var move = function (){
             pos.x -= moveSpeed;
@@ -771,7 +779,7 @@ $(document).ready(function () {
         if (coins.length > 0){
             player.check(4);
         }
-        if (player.settings.coins == 20){
+        if (player.settings.coins >= 20){
             player.life("inc");
             player.settings.coins = 0;
         }
