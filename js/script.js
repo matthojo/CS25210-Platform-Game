@@ -73,15 +73,11 @@ $(document).ready(function () {
     var canvasWidth = 800;
     var canvasHeight = 600;
     if(touchable){
-        canvas.attr("width", $(window).get(0).innerWidth);
-        canvas.attr("height", $(window).get(0).innerHeight);
-        canvas.attr("position", "absolute");
-        canvas.attr("top", 0);
-        canvas.attr("left", 0);
-    }else{
-        canvas.attr("width", canvasWidth);
-        canvas.attr("height", canvasHeight);
+        canvasWidth = $(window).get(0).innerWidth;
+        canvasHeight = $(window).get(0).innerHeight;
     }
+    canvas.attr("width", canvasWidth);
+    canvas.attr("height", canvasHeight);
 
     /**
      * Movement settings
@@ -158,10 +154,13 @@ $(document).ready(function () {
 
     var Sprites, Player, Coin, Heart, Item, Cloud, Structure, Block;
 
-    Sprites = function (){
+    /**
+     * Load in images / sprites
+     */
+    Sprites = function (src){
         var sprite = [new Image(), false];
 
-        sprite[0].src = "img/sprites.gif";
+        sprite[0].src = src;
         sprite[0].onload = function (){
             sprite[1] = true;
         };
@@ -719,7 +718,7 @@ $(document).ready(function () {
     /**
      * Create object instances
      */
-    var sprite = new Sprites();
+    var sprite = new Sprites("img/sprites.gif");
     var player = new Player(initialPlayerLocation, floorHeight);
     var coin = new Coin(20, 20);
     var heart = new Heart(20, 58);
@@ -864,7 +863,7 @@ $(document).ready(function () {
             if (debug){
                 terminalAppend("Added Structure. Layout :: " + ranLayout + ", Block Count ::" + (ranWidth * ranHeight) + "(" + ranWidth + "x" + ranHeight + ")");
             }
-            spacing -= ranWidth * blockSize;
+            spacing = -(ranWidth * blockSize);
         } else if (spacing < structureSpacing) spacing++;
         if (structures.length >= structureCount){
             for (var i = 0; i < structures.length; i++){
