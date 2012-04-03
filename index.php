@@ -174,7 +174,7 @@ for optimal performance, create your own custom Modernizr build: www.modernizr.c
 <!-- end scripts -->
 
 
-!-- Asynchronous Google Analytics snippet. Change UA-XXXXX-X to be your site's ID.
+<!-- Asynchronous Google Analytics snippet. Change UA-XXXXX-X to be your site's ID.
        mathiasbynens.be/notes/async-analytics-snippet -->
   <script>
     var _gaq=[['_setAccount','UA-4609610-24'],['_trackPageview']];
