@@ -1031,16 +1031,19 @@ $(document).ready(function () {
         if (Modernizr.localstorage && localStorage.getItem('highScore')){
             highScoreOut.html(localStorage.getItem('highScore') + " meters <span class='offline'>(offline)</span>");
             highScore = localStorage.getItem('highScore');
+            personalHigh = highScore;
         } else{
             highScoreOut.html("0 meters (offline)");
         }
         if (connected){
             $.ajax({
                 type:"POST",
+                cache: false,
                 data:"name=" + twitter_username,
                 url:"php/ajax/getHighScore.php",
                 success:function (html){
                     highScoreOut.html(html + " meters <span class='offline'>(online)</span>");
+                    personalHigh = html;
                 }
             });
         }
@@ -1050,6 +1053,7 @@ $(document).ready(function () {
         updatingScores.show();
         $.ajax({
             type:"POST",
+            cache: false,
             data:"score=" + score + "&name=" + twitter_username,
             url:"php/ajax/sendScore.php",
             success:function (html){
@@ -1057,7 +1061,6 @@ $(document).ready(function () {
                     terminalAppend("SUBMITTED TO ONLINE HIGHSCORE!");
                     updatingScores.hide();
                     highList.html(html);
-                    personalHigh = html;
                     /*$.ajax({
                      url: "php/ajax/updateScores.php",
                      success: function(html){
