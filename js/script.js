@@ -100,6 +100,9 @@ $(document).ready(function () {
     var playTime = 0;
     var distance = 0;
     var score = 0, highScore = 0, level = 1;
+    var globalHigh  = $(".meters").first().text();
+    var personalHigh = highScore;
+    terminalAppend(globalHigh);
 
     /**
      * UI Elements
@@ -140,6 +143,7 @@ $(document).ready(function () {
     var structureCount = 4;
     var blocks = [];
     var coins = [];
+    var items = [];
     var moveSpeed = 4;
     var blockSize = 32;
     var structureSpacing = 30;
@@ -451,6 +455,12 @@ $(document).ready(function () {
         };
     };
 
+    /**
+     *
+     * @param x
+     * @param y
+     * @param owner
+     */
     Coin = function (x, y, owner){
         var image = {x:16, y:0, w:16, h:16};
         var pos = {x:x, y:y};
@@ -474,6 +484,11 @@ $(document).ready(function () {
         };
     };
 
+    /**
+     *
+     * @param x
+     * @param y
+     */
     Heart = function (x, y){
         var image = {x:16, y:17, w:16, h:14};
         var pos = {x:x, y:y};
@@ -489,18 +504,44 @@ $(document).ready(function () {
         };
     };
 
-    Item = function (x, y){
-        var image = {x:16, y:17, w:16, h:16};
+    /**
+     * Types:
+     *  1 :: Global sign
+     *  2 :: Personal sign
+     *
+     * @param x
+     * @param y
+     * @param type
+     */
+    Item = function (x, y, type){
+        var image = {x:16, y:48, w:48, h:32};
         var pos = {x:x, y:y};
-        var settings = {width:32, height:32};
+        var settings = {width:image.w*2, height:image.h*2, type: type};
+        var checkEdge = function (){
+            return !(pos.x <= 0 - settings.width || pos.y <= 0 - settings.height);
+        };
         var draw = function (){
-            sprite.draw(image.x, image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+            switch(settings.type){
+                case 1:
+                    sprite.draw(image.x, image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+                    break;
+                case 2:
+                    sprite.draw(image.x, 80, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
+                    break;
+                default:
+                    break;
+            }
+        };
+        var move = function (){
+            pos.x -= moveSpeed;
         };
         return {
             image:image,
             settings:settings,
             pos:pos,
-            draw:draw
+            draw:draw,
+            check:checkEdge,
+            move:move
         };
     };
 
@@ -798,6 +839,19 @@ $(document).ready(function () {
         }
         context.restore();
 
+        //Draw items (such as score sign posts)
+        for (var i = 0; i < items.length; i++){
+            var item = items[i];
+            //check if its on screen, if not remove.
+            if(!item.check()){
+                items.removeByValue(item);
+            }
+            if (item){
+                item.draw();
+                item.move();
+            }
+        }
+
         // Move the player
         player.move();
 
@@ -829,6 +883,7 @@ $(document).ready(function () {
             }
         }
 
+        //Draw coins
         for (var i = 0; i < coins.length; i++){
             var coinBlock = coins[i];
             if (coinBlock){
@@ -844,6 +899,13 @@ $(document).ready(function () {
 
         //Update Timer
         playTime++;
+
+        if(globalHigh == distance){
+            items.push(new Item(canvasWidth, floorHeight - 64, 1));
+        }
+        if(personalHigh == distance){
+            items.push(new Item(canvasWidth, floorHeight - 64, 2));
+        }
     }
 
     /**
@@ -995,6 +1057,7 @@ $(document).ready(function () {
                     terminalAppend("SUBMITTED TO ONLINE HIGHSCORE!");
                     updatingScores.hide();
                     highList.html(html);
+                    personalHigh = html;
                     /*$.ajax({
                      url: "php/ajax/updateScores.php",
                      success: function(html){
