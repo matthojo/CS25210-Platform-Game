@@ -11,7 +11,7 @@ function getScores(){
         $name = $scores['name'];
         $meters = $scores['score'];
         
-        echo '<li><span class="name">'.$name.'</span><span class="meters">'.$meters.' meters</span></li>';
+        echo '<li><span class="name">'.$name.'</span><span class="meters">'.$meters.'</span></li>';
     }
 }
 
