@@ -1399,6 +1399,10 @@ canvas {
     display: block;
     border: 1px solid #CCC;
     background: url('../img/background.gif') left top repeat-x;
+    image-rendering:-moz-crisp-edges;
+    image-rendering: -o-crisp-edges;
+    image-rendering:-webkit-optimize-contrast;
+    -ms-interpolation-mode:nearest-neighbor;
 }
 .controls hr{
     border-style: dashed;
