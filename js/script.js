@@ -66,18 +66,10 @@ $(document).ready(function () {
         30-30*(m/200));g.appendChild(g.firstChild).style.height=a+"px";u=i;s++;if(i>t+1E3)l=Math.round(1E3*s/(i-t)),n=Math.min(n,l),o=Math.max(o,l),j.textContent=l+" FPS ("+n+"-"+o+")",a=Math.min(30,30-30*(l/100)),f.appendChild(f.firstChild).style.height=a+"px",t=i,s=0}}};
 
     /**
-     * Canvas settings
+     * Canvas Init
      */
     var canvas = $("#myCanvas");
     var context = canvas.get(0).getContext("2d");
-    var canvasWidth = 800;
-    var canvasHeight = 600;
-    if(touchable){
-        canvasWidth = $(window).get(0).innerWidth;
-        canvasHeight = $(window).get(0).innerHeight;
-    }
-    canvas.attr("width", canvasWidth);
-    canvas.attr("height", canvasHeight);
 
     /**
      * Movement settings
@@ -93,6 +85,17 @@ $(document).ready(function () {
      */
     var playGame = false, pause = false, gameOver = false, muted = false, debug = false;
 
+    /**
+    * Canvas Settings
+    **/
+    var canvasWidth = 800;
+    var canvasHeight = 600;
+    if(touchable){
+        canvasWidth = $(window).get(0).innerWidth;
+        canvasHeight = $(window).get(0).innerHeight;
+    }
+    canvas.attr("width", canvasWidth);
+    canvas.attr("height", canvasHeight);
 
     /**
      * Game Stats

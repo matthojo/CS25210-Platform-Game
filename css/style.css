@@ -1398,7 +1398,7 @@ a:hover {
 canvas {
     display: block;
     border: 1px solid #CCC;
-    background: url('../img/background.gif') left top repeat-x;
+    background: #D0FFFF url('../img/background.gif') left bottom repeat-x;
     image-rendering:-moz-crisp-edges;
     image-rendering: -o-crisp-edges;
     image-rendering:-webkit-optimize-contrast;
@@ -1407,7 +1407,6 @@ canvas {
 .controls hr{
     border-style: dashed;
     margin: 8px 0;
-
 }
 .controls{
     font-size: 12px;
@@ -1593,7 +1592,7 @@ audio .sound{display: none;}
    Modify as content requires.
    ========================================================================== */
 
-@media only screen and (device-width: 768px) {
+@media only screen and (max-device-width: 768px) {
   /* For general iPad layouts */
     html, body, .container{
         height: 100%;
@@ -1605,12 +1604,38 @@ audio .sound{display: none;}
         left: 0;
         width:100%;
         height: 100%;
+        max-height: 100%;
         margin: 0;
+    }
+    .interface canvas{
+        left: 0;
+        z-index: 1;
+    }
+    .menu{
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        z-index: 1050;
+        margin-left:-220px;
+        margin-top:-100px;
+    }
+    .menu .btn.twitter, .or{
+        display: none;
+    }
+    .options{
+        position: absolute;
+        right: 20px;
+        top: 0;
+        z-index: 99999;
+    }
+    .higherContent, .lowerContent{
+        display: none;
     }
 }
 
 @media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) {
   /* For portrait layouts only */
+
 }
 
 @media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape) {
