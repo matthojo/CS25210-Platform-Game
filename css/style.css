@@ -1619,11 +1619,14 @@ audio .sound{display: none;}
         margin-left:-220px;
         margin-top:-100px;
     }
-    .menu .btn.twitter, .or{
+    .menu.paused{
+        margin-top:-200px;
+    }
+    .menu .btn.twitter, .or, .toggleFullScreen,.toggleDebug{
         display: none;
     }
     .options{
-        position: absolute;
+        position: fixed;
         right: 20px;
         top: 0;
         z-index: 99999;

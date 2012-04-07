@@ -1161,11 +1161,13 @@ $(document).ready(function () {
         uiOver.hide();
     }));
 
-    $('.togglePause').toggle(function (){
-        pause = true;
-    }, function (){
-        pause = false;
-    });
+    $('.togglePause').on("click touchend", (function (event){
+        if(pause){
+            pause = false;
+            uiPause.hide();
+        }
+        else pause = true;
+    }));
 
     /**
      * When sound button is pressed
