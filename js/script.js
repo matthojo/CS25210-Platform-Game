@@ -117,6 +117,9 @@ $(document).ready(function () {
         continueButton = $(".continueGame"),
         exitButton = $(".exitGame"),
         debugUI = $(".debug");
+    if(touchable){
+        $(".touchControls").show();
+    }
     var stats;
     var scoreOut = $("#score"),
         overScoreOut = $(".scored"),

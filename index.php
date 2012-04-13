@@ -75,6 +75,12 @@ for optimal performance, create your own custom Modernizr build: www.modernizr.c
             <section class="menu start">
                 <div class="content">
                     <div class="logo">Runner Man, Platform Game of Doom!</div>
+                    <div class="touchControls">
+                        <ul>
+                            <li>Single Finger = Jump</li>
+                            <li>Multiple Fingers = Slide</li>
+                        </ul>
+                    </div>
                     <?php if (isset($_SESSION['access_token'])) : ?>
                     <p class="label">Logged in as:</p>
                     <span class="twitter_username"><?php echo $username ?></span>

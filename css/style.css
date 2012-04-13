@@ -1415,7 +1415,9 @@ canvas {
     float: right;
 }
 audio .sound{display: none;}
-
+.touchControls{
+    display: none;
+}
 .content{
     position: relative;
     width: 400px;
