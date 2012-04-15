@@ -1220,58 +1220,92 @@ button.btn.small, input[type="submit"].btn.small {
 .btn-small .caret {
     margin-top: 4px;
 }
-.alert {
-    padding: 8px 35px 8px 14px;
+table {
+    max-width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    background-color: transparent;
+}
+.table {
+    width: 100%;
     margin-bottom: 18px;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
-    background-color: #fcf8e3;
-    border: 1px solid #fbeed5;
+}
+.table th,
+.table td {
+    padding: 8px;
+    line-height: 18px;
+    text-align: left;
+    vertical-align: top;
+    border-top: 1px solid #dddddd;
+}
+.table th {
+    font-weight: bold;
+}
+.table thead th {
+    vertical-align: bottom;
+}
+.table colgroup + thead tr:first-child th,
+.table colgroup + thead tr:first-child td,
+.table thead:first-child tr:first-child th,
+.table thead:first-child tr:first-child td {
+    border-top: 0;
+}
+.table tbody + tbody {
+    border-top: 2px solid #dddddd;
+}
+.table-condensed th,
+.table-condensed td {
+    padding: 4px 5px;
+}
+.table-bordered {
+    border: 1px solid #dddddd;
+    border-left: 0;
+    border-collapse: separate;
+    *border-collapse: collapsed;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
 }
-.alert, .alert-heading {
-    color: #c09853;
+.table-bordered th,
+.table-bordered td {
+    border-left: 1px solid #dddddd;
 }
-.alert .close {
-    position: relative;
-    top: -2px;
-    right: -21px;
-    line-height: 18px;
+.table-bordered thead:first-child tr:first-child th,
+.table-bordered tbody:first-child tr:first-child th,
+.table-bordered tbody:first-child tr:first-child td {
+    border-top: 0;
 }
-.alert-success {
-    background-color: #dff0d8;
-    border-color: #d6e9c6;
+.table-bordered thead:first-child tr:first-child th:first-child,
+.table-bordered tbody:first-child tr:first-child td:first-child {
+    -webkit-border-radius: 4px 0 0 0;
+    -moz-border-radius: 4px 0 0 0;
+    border-radius: 4px 0 0 0;
 }
-.alert-success, .alert-success .alert-heading {
-    color: #468847;
+.table-bordered thead:first-child tr:first-child th:last-child,
+.table-bordered tbody:first-child tr:first-child td:last-child {
+    -webkit-border-radius: 0 4px 0 0;
+    -moz-border-radius: 0 4px 0 0;
+    border-radius: 0 4px 0 0;
 }
-.alert-danger, .alert-error {
-    background-color: #f2dede;
-    border-color: #eed3d7;
+.table-bordered thead:last-child tr:last-child th:first-child,
+.table-bordered tbody:last-child tr:last-child td:first-child {
+    -webkit-border-radius: 0 0 0 4px;
+    -moz-border-radius: 0 0 0 4px;
+    border-radius: 0 0 0 4px;
 }
-.alert-danger,
-.alert-error,
-.alert-danger .alert-heading,
-.alert-error .alert-heading {
-    color: #b94a48;
+.table-bordered thead:last-child tr:last-child th:last-child,
+.table-bordered tbody:last-child tr:last-child td:last-child {
+    -webkit-border-radius: 0 0 4px 0;
+    -moz-border-radius: 0 0 4px 0;
+    border-radius: 0 0 4px 0;
 }
-.alert-info {
-    background-color: #d9edf7;
-    border-color: #bce8f1;
+.table-striped tbody tr:nth-child(odd) td,
+.table-striped tbody tr:nth-child(odd) th {
+    background-color: #f9f9f9;
 }
-.alert-info, .alert-info .alert-heading {
-    color: #3a87ad;
-}
-.alert-block {
-    padding-top: 14px;
-    padding-bottom: 14px;
-}
-.alert-block > p, .alert-block > ul {
-    margin-bottom: 0;
-}
-.alert-block p + p {
-    margin-top: 5px;
+.table tbody tr:hover td,
+.table tbody tr:hover th {
+    background-color: #f5f5f5;
 }
 
 /* A full-screen element that is not the root element should be stretched
@@ -1327,6 +1361,7 @@ body {
     line-height: 18px;
     color: #333333;
     background-color: #F6F7F8;
+
 }
 a {
     color: #0088cc;
@@ -1442,6 +1477,32 @@ audio .sound{display: none;}
 }
 .logoBlack{
     background: url("../img/logoBlack.png") no-repeat top left;
+}
+.navBar{
+    font-family: 'SilkscreenNormal', Helvetica Neue,Arial, sans-serif;
+    width: 220px;
+    margin: 0 auto;
+}
+.navBar ul{
+   list-style: none;
+}
+.navBar ul li{
+    display: inline-block;
+    font-size: 24px;
+}
+.navBar ul li:first-child{
+    margin-right: 20px;
+}
+.navBar ul li.active{
+    color: #CCC;
+}
+.navBar a{
+    color: #444;
+    outline: none;
+}
+.navBar a:hover{
+    text-decoration: none;
+    color: #0088CC;
 }
 .menu{
     position: absolute;
@@ -1575,7 +1636,12 @@ audio .sound{display: none;}
 #log p.msg{
     margin-bottom: 4px;
 }
-
+.resources{
+    margin: 0 auto;
+}
+.resources table{
+    background-color: #FFF;
+}
 
 
 
