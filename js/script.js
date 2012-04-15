@@ -921,9 +921,9 @@ $(document).ready(function () {
     function addRemoveStructures(){
         if (structures.length < structureCount && spacing >= structureSpacing){
             var ranType = randomFromTo(1, 3);
-            var ranLayout = bitwiseRound(Math.random() * 5);
-            var ranHeight = bitwiseRound(Math.random() * level);
-            var ranWidth = bitwiseRound(Math.random() * level);
+            var ranLayout = bitwiseRound(Math.random() * 4+1);
+            var ranHeight = bitwiseRound(Math.random() * level+1);
+            var ranWidth = bitwiseRound(Math.random() * level+1);
             structures.push(
                 new Structure(canvasWidth, floorHeight - 32, ranType, ranLayout, ranWidth, ranHeight)
             );
