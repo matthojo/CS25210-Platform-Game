@@ -30,8 +30,6 @@ include 'php/classes/functions.php';
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory: mathiasbynens.be/notes/touch-icons -->
     <link rel="stylesheet" href="css/style.css">
 
-    <!-- More ideas for your <head> here: h5bp.com/d/head-Tips -->
-
     <!-- All JavaScript at the bottom, except this Modernizr build incl. Respond.js
 Respond is a polyfill for min/max-width media queries. Modernizr enables HTML5 elements & feature detects;
 for optimal performance, create your own custom Modernizr build: www.modernizr.com/download/ -->
@@ -40,13 +38,14 @@ for optimal performance, create your own custom Modernizr build: www.modernizr.c
 
 <body>
 <div class="container">
-    <header>
-        <nav>
-
-        </nav>
-    </header>
     <div class="higherContent content">
         <div class="title logo logoBlack">Runner Man, Platform Game of Doom!</div>
+        <div class="navBar">
+            <ul>
+                <li class="active">Home</li>
+                <li><a href="about.html" title="About">About</a></li>
+            </ul>
+        </div>
     </div>
     <div class="middleContent content">
         <div class="highTable">
@@ -136,7 +135,6 @@ for optimal performance, create your own custom Modernizr build: www.modernizr.c
         <div class="clearfix"></div>
     </div>
     <div class="lowerContent content">
-        <div class="alert alert-info"><strong>Note:</strong> Need to finish design.</div>
     </div>
 
     <!--<audio id="backgroundSound" loop="loop" loop>
