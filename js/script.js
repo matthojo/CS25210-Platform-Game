@@ -1119,6 +1119,17 @@ $(document).ready(function () {
     }
 
     /**
+     * Toggle the pause state.
+     */
+    function togglePaused(){
+        if(pause){
+            pause = false;
+            uiPause.hide();
+        }
+        else pause = true;
+    }
+
+    /**
      * Append messages to a console div.
      * @param msg
      */
@@ -1162,13 +1173,7 @@ $(document).ready(function () {
         uiOver.hide();
     }));
 
-    $('.togglePause').on("click touchend", (function (event){
-        if(pause){
-            pause = false;
-            uiPause.hide();
-        }
-        else pause = true;
-    }));
+    $('.togglePause').on("click touchend", togglePaused);
 
     /**
      * When sound button is pressed
@@ -1182,6 +1187,7 @@ $(document).ready(function () {
         toggleFullScreen();
         $(this).removeClass('fullscreen_alt');
         $(this).addClass('fullscreen_exit_alt');
+
     }, function (){
         toggleFullScreen();
         $(this).removeClass('fullscreen_exit_alt');
@@ -1243,8 +1249,9 @@ $(document).ready(function () {
         if (evt.keyCode === 38) upKey = true;
         else if (evt.keyCode === 40) downKey = true;
         if (evt.keyCode === 32) space = true;
+        if(evt.keyCode == 70) toggleFullScreen();
         if (evt.keyCode === 112) debugMode();
-        if (evt.keyCode === 80) if (!pause)pause = true;
+        if (evt.keyCode === 80) togglePaused();
         if(evt.keyCode == 83) toggleSound();
 
 
@@ -1358,7 +1365,12 @@ $(document).ready(function () {
             window.document.addEventListener('touchstart', onTouchStart, false);
             window.document.addEventListener('touchmove', onTouchMove, false);
             window.document.addEventListener('touchend', onTouchEnd, false);
-            window.document.addEventListener("orientationChanged", render);
+            window.document.addEventListener("orientationChanged", function(){
+                canvasWidth = $(window).get(0).innerWidth;
+                canvasHeight = $(window).get(0).innerHeight;
+                canvas.attr("width", canvasWidth);
+                canvas.attr("height", canvasHeight);
+            });
             window.document.addEventListener("touchcancel", onTouchEnd, false);
         } else{
             $(document).keydown(onKeyDown);

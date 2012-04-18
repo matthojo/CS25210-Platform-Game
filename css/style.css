@@ -1371,6 +1371,11 @@ a:hover {
     color: #005580;
     text-decoration: underline;
 }
+.container{
+    height: 100%;
+    width: 100%;
+}
+
 .highTable{
     background: #B29200;
     width: 300px;
@@ -1642,7 +1647,6 @@ audio .sound{display: none;}
 .resources table{
     background-color: #FFF;
 }
-
 
 
 
