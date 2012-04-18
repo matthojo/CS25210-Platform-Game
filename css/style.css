@@ -1457,6 +1457,8 @@ canvas {
 audio .sound{display: none;}
 .touchControls{
     display: none;
+    font-size: 12px;
+    z-index: 3;
 }
 .content{
     position: relative;
@@ -1670,6 +1672,11 @@ audio .sound{display: none;}
         height: 100%;
         width: 100%;
     }
+    .logo{
+        background-size: 135px, 25px;
+        height: 25px;
+        width: 135px;
+    }
     .interface{
         position: absolute;
         top: 0;
@@ -1690,6 +1697,17 @@ audio .sound{display: none;}
         z-index: 1050;
         margin-left:-220px;
         margin-top:-100px;
+
+    }
+    .menu p{
+        font-size: 12px;
+        margin: 4px 0;
+    }
+    .menu ul{
+        margin-bottom: 8px;
+    }
+    .menu.start .highScore{
+        font-size: 14px;
     }
     .menu.paused{
         margin-top:-200px;
@@ -1701,9 +1719,9 @@ audio .sound{display: none;}
         position: fixed;
         right: 20px;
         top: 0;
-        z-index: 99999;
+        z-index: 2;
     }
-    .higherContent, .lowerContent{
+    .higherContent, .lowerContent, .controls{
         display: none;
     }
 }
