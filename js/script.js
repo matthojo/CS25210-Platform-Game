@@ -799,8 +799,6 @@ $(document).ready(function () {
             level =  bitwiseRound(distance/125);
         }
         // Do something if key is pressed
-        if (touchable && touches.length > 0){
-        }
         if (rightKey){
             //player.pos.offsetX += moveSpeed;
         }
