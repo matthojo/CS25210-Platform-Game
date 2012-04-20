@@ -1650,6 +1650,11 @@ audio .sound{display: none;}
     background-color: rgba(255,255,255, 0.8);
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
 }
+.featureSection{
+    float: left;
+    margin-bottom: 20px;
+    margin-left: 20px;
+}
 .portrait_warning{
     display: none;
     background: #D0FFFF url('../img/background.gif') left bottom repeat-x;
