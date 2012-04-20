@@ -25,7 +25,7 @@ include 'php/classes/functions.php';
 
     <!-- Mobile viewport optimized: h5bp.com/viewport -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="viewport" content="width=device-width,height=device-height, initial-scale=1, maximum-scale=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
 
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory: mathiasbynens.be/notes/touch-icons -->
     <link rel="stylesheet" href="css/style.css">
@@ -158,11 +158,13 @@ for optimal performance, create your own custom Modernizr build: www.modernizr.c
         Your browser does not support the audio tag.
     </audio>
 </div>
-
+<div class="portrait_warning">
+    <h1>Please turn your device landscape.</h1>
+</div>
 <!-- JavaScript at the bottom for fast page loading -->
 
 <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="js/libs/jquery-1.7.1.min.js"><\/script>')</script>
 <!-- scripts concatenated and minified via build script -->
 <script defer src="js/plugins.js"></script>
