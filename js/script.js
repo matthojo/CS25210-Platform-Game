@@ -90,12 +90,8 @@ $(document).ready(function () {
     **/
     var canvasWidth = 800;
     var canvasHeight = 600;
-    if(touchable){
-        canvasWidth = $(window).get(0).innerWidth;
-        canvasHeight = $(window).get(0).innerHeight;
-    }
-    canvas.attr("width", canvasWidth);
-    canvas.attr("height", canvasHeight);
+    var fullscreen = false;
+    innitCanvas();
 
     /**
      * Game Stats
@@ -1078,7 +1074,43 @@ $(document).ready(function () {
         if (debug) terminalAppend("Updating Online Scores");
     }
 
+    //Output Twitter Username if connected
     if (connected) terminalAppend("Twitter Username: " + twitter_username);
+
+    /**
+     * Size the canvas
+     */
+    function innitCanvas(){
+        if(touchable || fullscreen){
+            canvasWidth = $(window).get(0).innerWidth;
+            canvasHeight = $(window).get(0).innerHeight;
+        }else{
+            canvasWidth = 800;
+            canvasHeight = 600;
+        }
+        canvas.attr("width", canvasWidth);
+        canvas.attr("height", canvasHeight);
+        floorHeight = canvasHeight - 49;
+    }
+
+    /**
+     * Resets the floor level (usually upon refresh)
+     */
+    function resetFloor(){
+        player.pos.y = floorHeight;
+        for (var i = 0; i < blocks.length; i++){
+            var block = blocks[i];
+            block.pos.y = floorHeight - 32;
+        }
+        for(var i = 0;i < items.length; i++){
+            var item = items[i];
+            item.pos.y = floorHeight - 64;
+        }
+        for (var i = 0; i < coins.length; i++){
+            var coinBlock = coins[i];
+            coinBlock.pos.y = floorHeight + coinBlock.pos.y;
+        }
+    }
 
     /**
      * Turn on debug options and display FPS
@@ -1218,6 +1250,11 @@ $(document).ready(function () {
             } else if (document.documentElement.webkitRequestFullScreen){
                 document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
             }
+
+            $(".container").addClass("full");
+            fullscreen = true;
+            innitCanvas();
+            resetFloor();
         } else{
             if (document.cancelFullScreen){
                 document.cancelFullScreen();
@@ -1226,6 +1263,11 @@ $(document).ready(function () {
             } else if (document.webkitCancelFullScreen){
                 document.webkitCancelFullScreen();
             }
+
+            $(".container").removeClass("full");
+            fullscreen = false;
+            innitCanvas();
+            resetFloor();
         }
     }
 
@@ -1365,12 +1407,8 @@ $(document).ready(function () {
             window.document.addEventListener('touchstart', onTouchStart, false);
             window.document.addEventListener('touchmove', onTouchMove, false);
             window.document.addEventListener('touchend', onTouchEnd, false);
-            window.document.addEventListener("orientationChanged", function(){
-                canvasWidth = $(window).get(0).innerWidth;
-                canvasHeight = $(window).get(0).innerHeight;
-                canvas.attr("width", canvasWidth);
-                canvas.attr("height", canvasHeight);
-            });
+            window.addEventListener('resize', innitCanvas, false);
+            window.addEventListener('orientationchange', innitCanvas, false);
             window.document.addEventListener("touchcancel", onTouchEnd, false);
         } else{
             $(document).keydown(onKeyDown);
@@ -1383,6 +1421,9 @@ $(document).ready(function () {
             } else{
                 window.onblur = outOfFocus;
             }
+        }
+        if(fullscreen){
+            window.addEventListener('resize', innitCanvas, false);
         }
     });
 
