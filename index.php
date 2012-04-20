@@ -20,7 +20,7 @@ include 'php/classes/functions.php';
  More info: h5bp.com/b/378 -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-    <title>Platform Game</title>
+    <title>Runner Man</title>
     <meta name="description" content="">
 
     <!-- Mobile viewport optimized: h5bp.com/viewport -->
