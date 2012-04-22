@@ -74,10 +74,10 @@ $(document).ready(function () {
     /**
      * Movement settings
      */
-        // Initialise controls
+    // Initialise controls
     var touchable = 'ontouchstart' in window || 'createTouch' in document;
     //if(touchable) refreshRate = 35;
-    if (touchable) muted = true;
+    if(touchable) muted = true;
     var touches = [], rightKey = false, leftKey = false, upKey = false, downKey = false, space = false;
 
     /**
@@ -86,8 +86,8 @@ $(document).ready(function () {
     var playGame = false, pause = false, gameOver = false, muted = false, debug = false;
 
     /**
-    * Canvas Settings
-    **/
+     * Canvas Settings
+     **/
     var canvasWidth = 800;
     var canvasHeight = 600;
     var fullscreen = false;
@@ -99,7 +99,7 @@ $(document).ready(function () {
     var playTime = 0;
     var distance = 0;
     var score = 0, highScore = 0, level = 1;
-    var globalHigh  = $(".meters").first().text();
+    var globalHigh = $(".meters").first().text();
     var personalHigh = highScore;
     terminalAppend(globalHigh);
 
@@ -137,7 +137,7 @@ $(document).ready(function () {
      * Game UI Settings
      */
     // Avoids blurring of edges
-    if ("mozImageSmoothingEnabled" in context){
+    if("mozImageSmoothingEnabled" in context){
         context.mozImageSmoothingEnabled = false;
     }
     updateHighScore();
@@ -163,18 +163,18 @@ $(document).ready(function () {
     /**
      * Load in images / sprites
      */
-    Sprites = function (src){
+    Sprites = function(src){
         var sprite = [new Image(), false];
 
         sprite[0].src = src;
-        sprite[0].onload = function (){
+        sprite[0].onload = function(){
             sprite[1] = true;
         };
 
-        var draw = function (sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight){
-            if (sprite[1]){
+        var draw = function(sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight){
+            if(sprite[1]){
                 context.drawImage(sprite[0], sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
-                if (debug){
+                if(debug){
                     context.beginPath();
                     context.strokeRect(dx, dy, dWidth, dHeight);
                     context.lineWidth = 1;
@@ -198,7 +198,7 @@ $(document).ready(function () {
      * @param x
      * @param y
      */
-    Player = function (x, y){
+    Player = function(x, y){
         var imageStill = {x:96, y:0, w:17, h:42};
         var imageRunning = {x:96, y:0, w:30, h:40, stage:1, timeout:0, maxTimeout:8};
         var imageJump = {x:96, y:44, w:29, h:40};
@@ -206,8 +206,8 @@ $(document).ready(function () {
         var pos = {x:x, y:y, offsetY:0, offsetX:0};
         var settings = {width:34, height:88, coins:0, health:100, energy:100, energyRegen:5, status:0, lives:3, jumpHeight:0, maxJumpHeight:40, jumpSpeed:4};
         var movement = {jumping:false, sliding:false};
-        var draw = function (){
-            switch (settings.status){
+        var draw = function(){
+            switch(settings.status){
                 case 0:
                     settings.width = imageStill.w * 2;
                     settings.height = imageStill.h * 2;
@@ -216,10 +216,10 @@ $(document).ready(function () {
                 case 1:
                     settings.width = imageRunning.w * 2;
                     settings.height = imageStill.h * 2;
-                    switch (imageRunning.stage){
+                    switch(imageRunning.stage){
                         case 1:
                             sprite.draw(imageRunning.x, 112, imageRunning.w, imageRunning.h, pos.x - settings.width + pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
-                            if (imageRunning.timeout == imageRunning.maxTimeout){
+                            if(imageRunning.timeout == imageRunning.maxTimeout){
                                 imageRunning.stage = 2;
                                 imageRunning.timeout = 0;
                             } else{
@@ -228,7 +228,7 @@ $(document).ready(function () {
                             break;
                         case 2:
                             sprite.draw(imageRunning.x, 152, imageRunning.w, imageRunning.h, pos.x - settings.width + pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
-                            if (imageRunning.timeout == imageRunning.maxTimeout){
+                            if(imageRunning.timeout == imageRunning.maxTimeout){
                                 imageRunning.stage = 3;
                                 imageRunning.timeout = 0;
                             } else{
@@ -237,7 +237,7 @@ $(document).ready(function () {
                             break;
                         case 3:
                             sprite.draw(imageRunning.x, 192, imageRunning.w, imageRunning.h, pos.x - settings.width + pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
-                            if (imageRunning.timeout == imageRunning.maxTimeout){
+                            if(imageRunning.timeout == imageRunning.maxTimeout){
                                 imageRunning.stage = 4;
                                 imageRunning.timeout = 0;
                             } else{
@@ -246,7 +246,7 @@ $(document).ready(function () {
                             break;
                         case 4:
                             sprite.draw(imageRunning.x, 152, imageRunning.w, imageRunning.h, pos.x - settings.width + pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
-                            if (imageRunning.timeout == imageRunning.maxTimeout){
+                            if(imageRunning.timeout == imageRunning.maxTimeout){
                                 imageRunning.stage = 1;
                                 imageRunning.timeout = 0;
                             } else{
@@ -274,7 +274,7 @@ $(document).ready(function () {
                     sprite.draw(imageStill.x, imageStill.y, imageStill.w, imageStill.h, pos.x - settings.width + pos.offsetX, pos.y - settings.height - pos.offsetY, settings.width, settings.height);
             }
         };
-        var drawStats = function (){
+        var drawStats = function(){
 
             context.font = "20px SilkscreenBold";
             coin.draw();
@@ -287,7 +287,7 @@ $(document).ready(function () {
             context.fillText(distance + " M", 20, 110);
 
             // Draw in health(?) and energy when debugging
-            if (debug){
+            if(debug){
                 context.translate(-10, 0);
                 context.strokeStyle = "rgba(76, 76, 76, 0.500)";
                 context.font = "11px SilkscreenNormal";
@@ -308,14 +308,14 @@ $(document).ready(function () {
             }
 
         };
-        var checkBlockEdge = function (edge){
+        var checkBlockEdge = function(edge){
             var connect = 0;
-            switch (edge){
+            switch(edge){
                 case 1:
                     // Top
-                    for (var i = 0; i < blocks.length; i++){
+                    for(var i = 0; i < blocks.length; i++){
                         var block = blocks[i];
-                        if ((pos.y - pos.offsetY) == block.pos.y &&
+                        if((pos.y - pos.offsetY) == block.pos.y &&
                             (pos.x + pos.offsetX) >= block.pos.x &&
                             block.pos.x - pos.x - settings.width + pos.offsetX < settings.width &&
                             block.pos.x + block.settings.width > pos.x - settings.width + pos.offsetX){
@@ -325,9 +325,9 @@ $(document).ready(function () {
                     break;
                 case 2:
                     // Left edge
-                    for (var i = 0; i < blocks.length; i++){
+                    for(var i = 0; i < blocks.length; i++){
                         var block = blocks[i];
-                        if ((pos.x + pos.offsetX) == block.pos.x &&
+                        if((pos.x + pos.offsetX) == block.pos.x &&
                             block.pos.y + block.settings.height > pos.y - settings.height - pos.offsetY &&
                             block.pos.y - (pos.y - settings.height - pos.offsetY) < settings.height - 4){
                             connect = 2;
@@ -336,9 +336,9 @@ $(document).ready(function () {
                     break;
                 case 3:
                     // Bottom
-                    for (var i = 0; i < blocks.length; i++){
+                    for(var i = 0; i < blocks.length; i++){
                         var block = blocks[i];
-                        if ((pos.y - settings.height - pos.offsetY) == block.pos.y + block.settings.height
+                        if((pos.y - settings.height - pos.offsetY) == block.pos.y + block.settings.height
                             && (pos.x + pos.offsetX) >= block.pos.x
                             && block.pos.x - pos.x - settings.width + pos.offsetX < settings.width
                             && block.pos.x + block.settings.width > pos.x - settings.width + pos.offsetX){
@@ -348,9 +348,9 @@ $(document).ready(function () {
                     break;
                 case 4:
                     //Coins
-                    for (var i = 0; i < coins.length; i++){
+                    for(var i = 0; i < coins.length; i++){
                         var coinBlock = coins[i];
-                        if ((pos.x + pos.offsetX - settings.width) <= coinBlock.pos.x + coinBlock.settings.width &&
+                        if((pos.x + pos.offsetX - settings.width) <= coinBlock.pos.x + coinBlock.settings.width &&
                             (pos.x + pos.offsetX) >= coinBlock.pos.x &&
                             (pos.y - settings.height - pos.offsetY) <= coinBlock.pos.y + coinBlock.settings.height &&
                             (pos.y + pos.offsetY) >= coinBlock.pos.y){
@@ -368,44 +368,44 @@ $(document).ready(function () {
             return connect;
 
         };
-        var move = function (){
-            if (movement.jumping && settings.energy > 70){
+        var move = function(){
+            if(movement.jumping && settings.energy > 70){
                 // Jumping
-                if (settings.jumpHeight < settings.maxJumpHeight){
+                if(settings.jumpHeight < settings.maxJumpHeight){
                     pos.offsetY += settings.jumpSpeed;
                     settings.jumpHeight += settings.jumpSpeed;
                     settings.status = 2;
                     playSound("jump");
                 } else{
                     movement.jumping = false;
-                    if (settings.energy > 0) settings.energy -= 50;
+                    if(settings.energy > 0) settings.energy -= 50;
                 }
-            } else if (pos.offsetY > 0 && checkBlockEdge(1) == 1){
+            } else if(pos.offsetY > 0 && checkBlockEdge(1) == 1){
                 // On top of block
                 settings.jumpHeight = 0;
                 settings.status = 1;
-                if (settings.energy < 100) settings.energy += settings.energyRegen;
+                if(settings.energy < 100) settings.energy += settings.energyRegen;
             }
-            else if (pos.offsetY > 0 && checkBlockEdge(1) == 0){
+            else if(pos.offsetY > 0 && checkBlockEdge(1) == 0){
                 // Falling
                 pos.offsetY -= settings.jumpSpeed * 2;
                 settings.jumpHeight -= settings.jumpSpeed * 2;
-            } else if (pos.offsetY == 0){
+            } else if(pos.offsetY == 0){
                 // Standing
                 movement.jumping = false;
                 settings.jumpHeight = 0;
                 settings.status = 1;
-                if (settings.energy < 100) settings.energy += settings.energyRegen;
+                if(settings.energy < 100) settings.energy += settings.energyRegen;
             }
-            if (movement.sliding){
+            if(movement.sliding){
                 // Sliding
-                if (pos.offsetY == 0){
+                if(pos.offsetY == 0){
                     settings.status = 3;
                 }
             }
-            if (checkBlockEdge(2) == 2){
+            if(checkBlockEdge(2) == 2){
                 // Pushed
-                if (pos.x + pos.offsetX > 4){
+                if(pos.x + pos.offsetX > 4){
                     pos.offsetX -= moveSpeed;
                     playSound("hit");
                 }
@@ -415,26 +415,26 @@ $(document).ready(function () {
                 }
             }
         };
-        var life = function (opt){
-            switch (opt){
+        var life = function(opt){
+            switch(opt){
                 case "dec":
-                    if (settings.lives > 0)settings.lives--;
+                    if(settings.lives > 0)settings.lives--;
                     else{
                         endGame();
                     }
-                    if (debug){
+                    if(debug){
                         terminalAppend("-1 Life");
                     }
                     break;
                 case "inc":
                     settings.lives++;
-                    if (debug){
+                    if(debug){
                         terminalAppend("+1 Life");
                     }
                     break;
             }
         };
-        var reset = function (){
+        var reset = function(){
             pos.offsetY = 0;
             settings.lifes = 3;
             settings.status = 1;
@@ -463,17 +463,17 @@ $(document).ready(function () {
      * @param y
      * @param owner
      */
-    Coin = function (x, y, owner){
+    Coin = function(x, y, owner){
         var image = {x:16, y:0, w:16, h:16};
         var pos = {x:x, y:y};
         var settings = {width:32, height:32, owner:owner};
-        var draw = function (){
+        var draw = function(){
             sprite.draw(image.x, image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
         };
-        var checkEdge = function (){
+        var checkEdge = function(){
             return !(pos.x <= 0 - settings.width || pos.y <= 0 - settings.height);
         };
-        var move = function (){
+        var move = function(){
             pos.x -= moveSpeed;
         };
         return {
@@ -491,11 +491,11 @@ $(document).ready(function () {
      * @param x
      * @param y
      */
-    Heart = function (x, y){
+    Heart = function(x, y){
         var image = {x:16, y:17, w:16, h:14};
         var pos = {x:x, y:y};
         var settings = {width:32, height:28};
-        var draw = function (){
+        var draw = function(){
             sprite.draw(image.x, image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
         };
         return {
@@ -515,14 +515,14 @@ $(document).ready(function () {
      * @param y
      * @param type
      */
-    Item = function (x, y, type){
+    Item = function(x, y, type){
         var image = {x:16, y:48, w:48, h:32};
         var pos = {x:x, y:y};
-        var settings = {width:image.w*2, height:image.h*2, type: type};
-        var checkEdge = function (){
+        var settings = {width:image.w * 2, height:image.h * 2, type:type};
+        var checkEdge = function(){
             return !(pos.x <= 0 - settings.width || pos.y <= 0 - settings.height);
         };
-        var draw = function (){
+        var draw = function(){
             switch(settings.type){
                 case 1:
                     sprite.draw(image.x, image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
@@ -534,7 +534,7 @@ $(document).ready(function () {
                     break;
             }
         };
-        var move = function (){
+        var move = function(){
             pos.x -= moveSpeed;
         };
         return {
@@ -565,8 +565,8 @@ $(document).ready(function () {
      * @param nW
      * @param nH
      */
-    Structure = function (x, y, type, layout, nW, nH){
-        var ID = function (blockCount){
+    Structure = function(x, y, type, layout, nW, nH){
+        var ID = function(blockCount){
             var blockCount = blockCount;
             return {
                 blockCount:blockCount
@@ -576,7 +576,7 @@ $(document).ready(function () {
         var layout = {layout:layout, type:type, width:blockSize * nW, height:blockSize * nH, blockCount:0};
         var id = new ID(1);
         var offset = 0;
-        switch (layout.layout){
+        switch(layout.layout){
             case 1:
                 // Single Block
                 blocks.push(new Block(pos.x, pos.y, layout.type, id));
@@ -586,11 +586,11 @@ $(document).ready(function () {
                 // Block Custom Solid
                 var numWide = nW;
                 var numHigh = nH;
-                for (var i = 0; i < numWide; i++){
+                for(var i = 0; i < numWide; i++){
                     // ADD ROWS
-                    for (var j = 0; j < numHigh; j++){
+                    for(var j = 0; j < numHigh; j++){
                         // ADD COLS
-                        if (nH >= 2){
+                        if(nH >= 2){
                             offset = blockSize
                         }
                         blocks.push(new Block(pos.x + (i * blockSize), pos.y - ((j * blockSize) + offset), layout.type, id));
@@ -604,13 +604,13 @@ $(document).ready(function () {
                 var numWide = nW;
                 var numHigh = nH;
                 var step = 0;
-                for (var j = 0; j < numHigh; j++){
+                for(var j = 0; j < numHigh; j++){
                     // ADD ROWS
-                    if (j > 0) step++;
-                    if (j > 0) numWide--;
-                    for (var i = 0; i < numWide; i++){
+                    if(j > 0) step++;
+                    if(j > 0) numWide--;
+                    for(var i = 0; i < numWide; i++){
                         // ADD COLS
-                        if (i > step){
+                        if(i > step){
                             blocks.push(new Block(pos.x + (i * blockSize), pos.y - (j * blockSize), layout.type, id));
                             layout.blockCount++;
                         }
@@ -624,12 +624,12 @@ $(document).ready(function () {
                 var numWide = nW;
                 var numHigh = nH;
                 var step = 0;
-                for (var j = 0; j < numHigh; j++){
+                for(var j = 0; j < numHigh; j++){
                     // ADD ROWS
-                    if (j > 0) step++;
-                    for (var i = 0; i < numWide; i++){
+                    if(j > 0) step++;
+                    for(var i = 0; i < numWide; i++){
                         // ADD COLS
-                        if (i > step){
+                        if(i > step){
                             blocks.push(new Block(pos.x + (i * blockSize), pos.y - (j * blockSize), layout.type, id));
                             layout.blockCount++;
                         }
@@ -642,9 +642,9 @@ $(document).ready(function () {
                 //Coins
                 var numWide = nW;
                 var numHigh = nH;
-                for (var i = 0; i < numWide; i++){
+                for(var i = 0; i < numWide; i++){
                     // ADD ROWS
-                    for (var j = 0; j < numHigh; j++){
+                    for(var j = 0; j < numHigh; j++){
                         // ADD COLS
                         coins.push(new Coin(pos.x + (i * blockSize), pos.y - ((j * blockSize) + offset), id));
                         layout.blockCount++;
@@ -657,12 +657,12 @@ $(document).ready(function () {
                 var numWide = nW;
                 var numHigh = nH;
                 var step = numWide;
-                for (var j = 0; j < numHigh; j++){
+                for(var j = 0; j < numHigh; j++){
                     // ADD ROWS
-                    if (j > 0) numWide--;
-                    for (var i = 0; i < numWide; i++){
+                    if(j > 0) numWide--;
+                    for(var i = 0; i < numWide; i++){
                         // ADD COLS
-                        if (nH >= 2){
+                        if(nH >= 2){
                             offset = blockSize
                         }
                         blocks.push(new Block(pos.x + (i * blockSize), pos.y - ((j * blockSize) + offset), layout.type, id));
@@ -693,26 +693,26 @@ $(document).ready(function () {
      * @param type
      * @param owner
      */
-    Block = function (x, y, type, owner){
+    Block = function(x, y, type, owner){
         var image = {x:80, y:(16 * type), w:16, h:16};
         var pos = {x:x, y:y};
         var settings = {width:blockSize, height:blockSize, type:type, owner:owner};
-        if (!type){
+        if(!type){
             settings.type = 1;
         }
-        var draw = function (){
+        var draw = function(){
             // Single Block
             sprite.draw(image.x, image.y, image.w, image.h, pos.x, pos.y, settings.width, settings.height);
-            if (debug && settings.type){
+            if(debug && settings.type){
                 context.font = "20px 800 Arial";
                 context.fillText(settings.type, pos.x + 4, pos.y + 10);
             }
         };
-        var checkEdge = function (){
+        var checkEdge = function(){
             //4 * block width, so left hand side bug is fixed.
-            return !(pos.x <= 0 - ((settings.width*4)+(settings.width/2))|| pos.y <= 0 - settings.height);
+            return !(pos.x <= 0 - ((settings.width * 4) + (settings.width / 2)) || pos.y <= 0 - settings.height);
         };
-        var move = function (){
+        var move = function(){
             pos.x -= moveSpeed;
         };
         return {
@@ -725,25 +725,25 @@ $(document).ready(function () {
         };
     };
 
-    Cloud = function (x, y){
+    Cloud = function(x, y){
         var image = {w:41, h:21, x:36, y:0};
         var type = randomFromTo(0, 1);
-        if (type == 1){
+        if(type == 1){
             image.y = 22
         } else{
             image.y = 0
         }
         var pos = {x:x, y:y, offsetx:0, offsety:0, speed:moveSpeed / 10};
         var settings = {width:81, height:42};
-        var draw = function (){
+        var draw = function(){
             sprite.draw(image.x, image.y, image.w, image.h, pos.x + pos.offsetx, pos.y + pos.offsety, settings.width, settings.height);
         };
-        var move = function (){
+        var move = function(){
             pos.offsetx -= pos.speed;
-            if ((pos.x + pos.offsetx + settings.width) <= 0){
+            if((pos.x + pos.offsetx + settings.width) <= 0){
                 pos.offsetx += canvasWidth + settings.width;
                 pos.offsety = randomFromTo(-42, 42);
-                if (pos.offsety + pos.y < 0) pos.offsety = 0;
+                if(pos.offsety + pos.y < 0) pos.offsety = 0;
                 type = randomFromTo(0, 1);
                 //pos.speed = randomFromTo(0,1);
 
@@ -767,13 +767,13 @@ $(document).ready(function () {
     var heart = new Heart(20, 58);
 
     console.log(blocks.length);
-    if (debug){
+    if(debug){
         terminalAppend(blocks.length);
     }
 
     var clouds = [];
     var cloudCount = 4;
-    for (var i = 0; i < cloudCount; i++){
+    for(var i = 0; i < cloudCount; i++){
         var x = randomFromTo(0, canvasWidth);
         var y = randomFromTo(10, 42);
         var cloud = new Cloud(x, y);
@@ -792,47 +792,47 @@ $(document).ready(function () {
         // Levels
 
         if(level < 8){
-            level =  bitwiseRound(distance/125);
+            level = bitwiseRound(distance / 125);
         }
         // Do something if key is pressed
-        if (rightKey){
+        if(rightKey){
             //player.pos.offsetX += moveSpeed;
         }
-        if (leftKey){
+        if(leftKey){
             //player.pos.offsetX -= moveSpeed;
         }
-        if (upKey){
-            if (player.check(3) != 3){
-                if (player.movement.sliding){
+        if(upKey){
+            if(player.check(3) != 3){
+                if(player.movement.sliding){
                     player.movement.sliding = false;
                 }
-                if (player.settings.jumpHeight == 0 && player.settings.energy == 100) player.movement.jumping = true;
+                if(player.settings.jumpHeight == 0 && player.settings.energy == 100) player.movement.jumping = true;
             }
         }
-        if (downKey){
+        if(downKey){
             player.movement.sliding = true;
         }
-        if (space){
-            if (player.check(3) != 3){
-                if (player.movement.sliding){
+        if(space){
+            if(player.check(3) != 3){
+                if(player.movement.sliding){
                     player.pos.offsetX -= player.settings.width;
                     player.movement.sliding = false;
                 }
-                if (player.settings.jumpHeight == 0 && player.settings.energy == 100) player.movement.jumping = true;
+                if(player.settings.jumpHeight == 0 && player.settings.energy == 100) player.movement.jumping = true;
             }
         }
 
         // Check Coins
-        if (coins.length > 0){
+        if(coins.length > 0){
             player.check(4);
         }
-        if (player.settings.coins >= 20){
+        if(player.settings.coins >= 20){
             player.life("inc");
             player.settings.coins = 0;
         }
         //Draw Clouds
         context.save();
-        for (var i = 0; i < clouds.length; i++){
+        for(var i = 0; i < clouds.length; i++){
             var cloud = clouds[i];
             cloud.draw();
             cloud.move();
@@ -840,13 +840,13 @@ $(document).ready(function () {
         context.restore();
 
         //Draw items (such as score sign posts)
-        for (var i = 0; i < items.length; i++){
+        for(var i = 0; i < items.length; i++){
             var item = items[i];
             //check if its on screen, if not remove.
             if(!item.check()){
                 items.removeByValue(item);
             }
-            if (item){
+            if(item){
                 item.draw();
                 item.move();
             }
@@ -868,10 +868,10 @@ $(document).ready(function () {
         //Draw structures
         context.save();
         addRemoveStructures();
-        for (var i = 0; i < blocks.length; i++){
+        for(var i = 0; i < blocks.length; i++){
             var block = blocks[i];
-            if (block){
-                if (!block.check()){
+            if(block){
+                if(!block.check()){
                     block.settings.owner.blockCount--;
                     /* Dont remove block due to error where blocks shifted position  */
                     // blocks.removeByValue(block);
@@ -884,11 +884,11 @@ $(document).ready(function () {
         }
 
         //Draw coins
-        for (var i = 0; i < coins.length; i++){
+        for(var i = 0; i < coins.length; i++){
             var coinBlock = coins[i];
-            if (coinBlock){
+            if(coinBlock){
                 coinBlock.draw();
-                if (!coinBlock.check()){
+                if(!coinBlock.check()){
                     coinBlock.settings.owner.blockCount--;
                     coins.removeByValue(coinBlock);
                 }
@@ -913,26 +913,26 @@ $(document).ready(function () {
      * Removes structures if they contain no blocks.
      */
     function addRemoveStructures(){
-        if (structures.length < structureCount && spacing >= structureSpacing){
+        if(structures.length < structureCount && spacing >= structureSpacing){
             var ranType = randomFromTo(1, 3);
-            var ranLayout = bitwiseRound(Math.random() * 4+1);
-            var ranHeight = bitwiseRound(Math.random() * level+1);
-            var ranWidth = bitwiseRound(Math.random() * level+1);
+            var ranLayout = bitwiseRound(Math.random() * 4 + 1);
+            var ranHeight = bitwiseRound(Math.random() * level + 1);
+            var ranWidth = bitwiseRound(Math.random() * level + 1);
             structures.push(
                 new Structure(canvasWidth, floorHeight - 32, ranType, ranLayout, ranWidth, ranHeight)
             );
 
-            if (debug){
+            if(debug){
                 terminalAppend("Added Structure. Layout :: " + ranLayout + ", Block Count ::" + (ranWidth * ranHeight) + "(" + ranWidth + "x" + ranHeight + ")");
             }
             spacing = -(ranWidth * blockSize);
-        } else if (spacing < structureSpacing) spacing++;
-        if (structures.length >= structureCount){
-            for (var i = 0; i < structures.length; i++){
+        } else if(spacing < structureSpacing) spacing++;
+        if(structures.length >= structureCount){
+            for(var i = 0; i < structures.length; i++){
                 var structure = structures[i];
-                if (structure.id.blockCount <= 0){
+                if(structure.id.blockCount <= 0){
                     structures.removeByValue(structure);
-                    if (debug){
+                    if(debug){
                         terminalAppend("Removed Structure. Array loc. ::  " + i);
                     }
                 }
@@ -945,7 +945,7 @@ $(document).ready(function () {
      * @param name
      */
     function playSound(name){
-        if (!muted) switch (name){
+        if(!muted) switch(name){
             case "background":
                 backgroundSound.play();
                 break;
@@ -990,7 +990,7 @@ $(document).ready(function () {
         context.clearRect(0, 0, canvasWidth, canvasHeight);
         context.restore();
 
-        if (debug){
+        if(debug){
             terminalAppend("Reset Stats");
         }
     }
@@ -1015,33 +1015,33 @@ $(document).ready(function () {
     }
 
     function saveHighScore(){
-        if (Modernizr.localstorage){
-            if (score > highScore){
+        if(Modernizr.localstorage){
+            if(score > highScore){
                 terminalAppend("New High Score");
                 localStorage.setItem('highScore', score);
                 newhighScore.show();
             }
         }
-        if (connected){
+        if(connected){
             updateOnlineScore();
         }
     }
 
     function updateHighScore(){
-        if (Modernizr.localstorage && localStorage.getItem('highScore')){
+        if(Modernizr.localstorage && localStorage.getItem('highScore')){
             highScoreOut.html(localStorage.getItem('highScore') + " meters <span class='offline'>(offline)</span>");
             highScore = localStorage.getItem('highScore');
             personalHigh = highScore;
         } else{
             highScoreOut.html("0 meters (offline)");
         }
-        if (connected){
+        if(connected){
             $.ajax({
                 type:"POST",
-                cache: false,
+                cache:false,
                 data:"name=" + twitter_username,
                 url:"php/ajax/getHighScore.php",
-                success:function (html){
+                success:function(html){
                     highScoreOut.html(html + " meters <span class='offline'>(online)</span>");
                     personalHigh = html;
                 }
@@ -1053,11 +1053,11 @@ $(document).ready(function () {
         updatingScores.show();
         $.ajax({
             type:"POST",
-            cache: false,
+            cache:false,
             data:"score=" + score + "&name=" + twitter_username,
             url:"php/ajax/sendScore.php",
-            success:function (html){
-                if (html != "Failed" || html != "Invalid data"){
+            success:function(html){
+                if(html != "Failed" || html != "Invalid data"){
                     terminalAppend("SUBMITTED TO ONLINE HIGHSCORE!");
                     updatingScores.hide();
                     highList.html(html);
@@ -1071,11 +1071,11 @@ $(document).ready(function () {
             }
 
         });
-        if (debug) terminalAppend("Updating Online Scores");
+        if(debug) terminalAppend("Updating Online Scores");
     }
 
     //Output Twitter Username if connected
-    if (connected) terminalAppend("Twitter Username: " + twitter_username);
+    if(connected) terminalAppend("Twitter Username: " + twitter_username);
 
     /**
      * Size the canvas
@@ -1084,7 +1084,7 @@ $(document).ready(function () {
         if(touchable || fullscreen){
             canvasWidth = $(window).get(0).innerWidth;
             canvasHeight = $(window).get(0).innerHeight;
-        }else{
+        } else{
             canvasWidth = 800;
             canvasHeight = 600;
         }
@@ -1098,15 +1098,15 @@ $(document).ready(function () {
      */
     function resetFloor(){
         player.pos.y = floorHeight;
-        for (var i = 0; i < blocks.length; i++){
+        for(var i = 0; i < blocks.length; i++){
             var block = blocks[i];
             block.pos.y = floorHeight - 32;
         }
-        for(var i = 0;i < items.length; i++){
+        for(var i = 0; i < items.length; i++){
             var item = items[i];
             item.pos.y = floorHeight - 64;
         }
-        for (var i = 0; i < coins.length; i++){
+        for(var i = 0; i < coins.length; i++){
             var coinBlock = coins[i];
             coinBlock.pos.y = floorHeight + coinBlock.pos.y;
         }
@@ -1118,12 +1118,12 @@ $(document).ready(function () {
     function debugMode(){
 
         debug = !debug;
-        if (debug){
+        if(debug){
             terminalAppend("DEBUG ENABLED");
             $('.toggleDebug').removeClass('muted');
         } else $('.toggleDebug').addClass('muted');
 
-        if (!stats){
+        if(!stats){
             stats = new Stats();
 
             // Align top-left
@@ -1132,7 +1132,7 @@ $(document).ready(function () {
             stats.getDomElement().style.top = '0px';
 
             document.body.appendChild(stats.getDomElement());
-            setInterval(function (){
+            setInterval(function(){
                 stats.update();
             }, 1000 / 60);
         }
@@ -1143,7 +1143,7 @@ $(document).ready(function () {
             muted = true;
             $('.toggleSound').addClass('muted');
             if(debug) terminalAppend("Sound Off");
-        }else{
+        } else{
             muted = false;
             $('.toggleSound').removeClass('muted');
             if(debug) terminalAppend("Sound On");
@@ -1173,7 +1173,7 @@ $(document).ready(function () {
     /**
      * When play button is pressed
      */
-    playButton.on("click touchend", (function (event){
+    playButton.on("click touchend", (function(event){
         resetAll();
         playGame = true;
         pause = false;
@@ -1186,7 +1186,7 @@ $(document).ready(function () {
     /**
      * When play button is pressed
      */
-    continueButton.on("click touchend", (function (event){
+    continueButton.on("click touchend", (function(event){
         playGame = true;
         pause = false;
         gameOver = false;
@@ -1195,7 +1195,7 @@ $(document).ready(function () {
         uiOver.hide();
     }));
 
-    exitButton.on("click touchend", (function (event){
+    exitButton.on("click touchend", (function(event){
         resetAll();
         playGame = false;
         pause = false;
@@ -1215,12 +1215,12 @@ $(document).ready(function () {
     /**
      * When full screen button is pressed
      */
-    $('.toggleFullScreen').toggle(function (){
+    $('.toggleFullScreen').toggle(function(){
         toggleFullScreen();
         $(this).removeClass('fullscreen_alt');
         $(this).addClass('fullscreen_exit_alt');
 
-    }, function (){
+    }, function(){
         toggleFullScreen();
         $(this).removeClass('fullscreen_exit_alt');
         $(this).addClass('fullscreen_alt');
@@ -1229,9 +1229,9 @@ $(document).ready(function () {
     /**
      * When debug button is pressed
      */
-    $('.toggleDebug').toggle(function (){
+    $('.toggleDebug').toggle(function(){
         debugMode();
-    }, function (){
+    }, function(){
         debugMode();
     });
 
@@ -1241,13 +1241,13 @@ $(document).ready(function () {
      * Code is taken from Firefox online Fullscreen API documentation
      */
     function toggleFullScreen(){
-        if ((document.fullScreenElement && document.fullScreenElement !== null) || // alternative standard method
+        if((document.fullScreenElement && document.fullScreenElement !== null) || // alternative standard method
             (!document.mozFullScreen && !document.webkitIsFullScreen)){               // current working methods
-            if (document.documentElement.requestFullScreen){
+            if(document.documentElement.requestFullScreen){
                 document.documentElement.requestFullScreen();
-            } else if (document.documentElement.mozRequestFullScreen){
+            } else if(document.documentElement.mozRequestFullScreen){
                 document.documentElement.mozRequestFullScreen();
-            } else if (document.documentElement.webkitRequestFullScreen){
+            } else if(document.documentElement.webkitRequestFullScreen){
                 document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
             }
 
@@ -1256,11 +1256,11 @@ $(document).ready(function () {
             innitCanvas();
             resetFloor();
         } else{
-            if (document.cancelFullScreen){
+            if(document.cancelFullScreen){
                 document.cancelFullScreen();
-            } else if (document.mozCancelFullScreen){
+            } else if(document.mozCancelFullScreen){
                 document.mozCancelFullScreen();
-            } else if (document.webkitCancelFullScreen){
+            } else if(document.webkitCancelFullScreen){
                 document.webkitCancelFullScreen();
             }
 
@@ -1272,8 +1272,8 @@ $(document).ready(function () {
     }
 
     function outOfFocus(){
-        if (playGame) pause = true;
-        if (debug) terminalAppend("Window went out of focus");
+        if(playGame) pause = true;
+        if(debug) terminalAppend("Window went out of focus");
     }
 
     /******
@@ -1286,14 +1286,14 @@ $(document).ready(function () {
      */
     function onKeyDown(evt){
         evt.preventDefault();
-        if (evt.keyCode === 39) rightKey = true;
-        else if (evt.keyCode === 37) leftKey = true;
-        if (evt.keyCode === 38) upKey = true;
-        else if (evt.keyCode === 40) downKey = true;
-        if (evt.keyCode === 32) space = true;
+        if(evt.keyCode === 39) rightKey = true;
+        else if(evt.keyCode === 37) leftKey = true;
+        if(evt.keyCode === 38) upKey = true;
+        else if(evt.keyCode === 40) downKey = true;
+        if(evt.keyCode === 32) space = true;
         if(evt.keyCode == 70) toggleFullScreen();
-        if (evt.keyCode === 112) debugMode();
-        if (evt.keyCode === 80) togglePaused();
+        if(evt.keyCode === 112) debugMode();
+        if(evt.keyCode === 80) togglePaused();
         if(evt.keyCode == 83) toggleSound();
 
 
@@ -1304,11 +1304,11 @@ $(document).ready(function () {
      * @param evt
      */
     function onKeyUp(evt){
-        if (evt.keyCode === 39) rightKey = false;
-        else if (evt.keyCode === 37) leftKey = false;
-        if (evt.keyCode === 38) upKey = false;
-        else if (evt.keyCode === 40) downKey = false;
-        if (evt.keyCode === 32) space = false;
+        if(evt.keyCode === 39) rightKey = false;
+        else if(evt.keyCode === 37) leftKey = false;
+        if(evt.keyCode === 38) upKey = false;
+        else if(evt.keyCode === 40) downKey = false;
+        if(evt.keyCode === 32) space = false;
     }
 
     /**
@@ -1316,7 +1316,7 @@ $(document).ready(function () {
      * @param e
      */
     function mouseUp(e){
-        if (!e) var e = event;
+        if(!e) var e = event;
         e.preventDefault();
 
         downKey = upKey = false;
@@ -1328,19 +1328,19 @@ $(document).ready(function () {
      * @param e
      */
     function mouseDown(e){
-        if (!e) var e = event;
+        if(!e) var e = event;
         e.preventDefault();
-        if (e.button == 2) //right click
+        if(e.button == 2) //right click
         {
 
-            if (debug){
+            if(debug){
                 terminalAppend("Right Click");
             }
             downKey = true;
         }
         else //left click
         {
-            if (debug){
+            if(debug){
                 terminalAppend("Left Click");
             }
             upKey = true;
@@ -1357,7 +1357,7 @@ $(document).ready(function () {
         touches = e.touches;
         if(touches.length > 1){
             downKey = true;
-        }else upKey = true;
+        } else upKey = true;
     }
 
     /**
@@ -1402,8 +1402,8 @@ $(document).ready(function () {
     /**
      * Initialise keyboard and touch controls
      */
-    $(document).ready(function (){
-        if (touchable){
+    $(document).ready(function(){
+        if(touchable){
             window.document.addEventListener('touchstart', onTouchStart, false);
             window.document.addEventListener('touchmove', onTouchMove, false);
             window.document.addEventListener('touchend', onTouchEnd, false);
@@ -1416,7 +1416,7 @@ $(document).ready(function () {
             document.getElementById("myCanvas").addEventListener("mousedown", mouseDown, false);
             document.body.addEventListener("mouseup", mouseUp, false);
 
-            if (/*@cc_on!@*/false){ // check for Internet Explorer
+            if(/*@cc_on!@*/false){ // check for Internet Explorer
                 document.onfocusout = outOfFocus;
             } else{
                 window.onblur = outOfFocus;
@@ -1430,17 +1430,17 @@ $(document).ready(function () {
     function startGame(){
         requestAnimationFrame(startGame);
 
-        if (debug) debugUI.show();
+        if(debug) debugUI.show();
         else debugUI.hide();
 
-        if (playGame){
-            if (pause){
+        if(playGame){
+            if(pause){
                 uiPause.show();
             } else{
                 render();
             }
         }
-        else if (gameOver) uiOver.show();
+        else if(gameOver) uiOver.show();
         else uiStart.show();
 
     }
