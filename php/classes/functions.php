@@ -5,6 +5,10 @@
  * Date: 15/03/2012
  * Time: 13:58
  */
+
+/**
+ * Returns 10 ten scores.
+ */
 function getScores(){
     $query = mysql_query("SELECT * FROM `scores` ORDER BY `score` DESC LIMIT 10");
     while($scores = mysql_fetch_array($query, MYSQL_ASSOC)){

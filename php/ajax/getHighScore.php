@@ -4,6 +4,8 @@
  * Author: matthojo
  * Date: 15/03/2012
  * Time: 16:32
+ *
+ * Gets individuals highest score.
  */
 
 include '../settings.php';

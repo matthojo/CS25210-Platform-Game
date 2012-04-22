@@ -4,6 +4,8 @@
  * Author: matthojo
  * Date: 15/03/2012
  * Time: 14:12
+ *
+ * Sends score to high score table.
  */
 include '../settings.php';
 include '../classes/functions.php';

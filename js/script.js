@@ -16,6 +16,7 @@ Array.prototype.removeByValue = function (val) {
         }
     }
 };
+
 $(document).ready(function () {
 
     // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -68,12 +69,14 @@ $(document).ready(function () {
     /**
      * Canvas Init
      */
+
     var canvas = $("#myCanvas");
     var context = canvas.get(0).getContext("2d");
 
     /**
      * Movement settings
      */
+
     // Initialise controls
     var touchable = 'ontouchstart' in window || 'createTouch' in document;
     //if(touchable) refreshRate = 35;
@@ -83,19 +86,22 @@ $(document).ready(function () {
     /**
      * Game settings
      */
+
     var playGame = false, pause = false, gameOver = false, muted = false, debug = false;
 
     /**
      * Canvas Settings
      **/
+
     var canvasWidth = 800;
     var canvasHeight = 600;
     var fullscreen = false;
-    innitCanvas();
+    initCanvas();
 
     /**
      * Game Stats
      */
+
     var playTime = 0;
     var distance = 0;
     var score = 0, highScore = 0, level = 1;
@@ -106,6 +112,7 @@ $(document).ready(function () {
     /**
      * UI Elements
      */
+
     var uiStart = $(".start"),
         uiPause = $(".paused"),
         uiOver = $(".gameOver"),
@@ -123,9 +130,11 @@ $(document).ready(function () {
         newhighScore = $(".newHighScore"),
         updatingScores = $(".updatingScores"),
         highList = $(".highList");
+
     /**
      * Sounds
      */
+
     var jumpSound = $("#jumpSound").get(0),
         coinSound = $("#coinSound").get(0),
         levelupSound = $("#levelupSound").get(0),
@@ -136,6 +145,7 @@ $(document).ready(function () {
     /**
      * Game UI Settings
      */
+
     // Avoids blurring of edges
     if("mozImageSmoothingEnabled" in context){
         context.mozImageSmoothingEnabled = false;
@@ -146,6 +156,8 @@ $(document).ready(function () {
     var blocks = [];
     var coins = [];
     var items = [];
+    var clouds = [];
+    var cloudCount = 4;
     var moveSpeed = 4;
     var blockSize = 32;
     var structureSpacing = 30;
@@ -160,8 +172,12 @@ $(document).ready(function () {
 
     var Sprites, Player, Coin, Heart, Item, Cloud, Structure, Block;
 
+
     /**
      * Load in images / sprites
+     * @param src File source of image
+     * @return {Object}
+     * @constructor
      */
     Sprites = function(src){
         var sprite = [new Image(), false];
@@ -191,12 +207,15 @@ $(document).ready(function () {
 
 
     /**
-     * Status: Still = 0
+     *  Status: Still = 0
      *         Running = 1
      *         Jump = 2
      *         Slide = 3
-     * @param x
-     * @param y
+     *
+     * @param x X location
+     * @param y Y location
+     * @return {Object}
+     * @constructor
      */
     Player = function(x, y){
         var imageStill = {x:96, y:0, w:17, h:42};
@@ -459,9 +478,11 @@ $(document).ready(function () {
 
     /**
      *
-     * @param x
-     * @param y
-     * @param owner
+     * @param x X location
+     * @param y Y location
+     * @param owner Structure object that it belongs to
+     * @return {Object}
+     * @constructor
      */
     Coin = function(x, y, owner){
         var image = {x:16, y:0, w:16, h:16};
@@ -488,8 +509,10 @@ $(document).ready(function () {
 
     /**
      *
-     * @param x
-     * @param y
+     * @param x X location
+     * @param y Y location
+     * @return {Object}
+     * @constructor
      */
     Heart = function(x, y){
         var image = {x:16, y:17, w:16, h:14};
@@ -511,9 +534,11 @@ $(document).ready(function () {
      *  1 :: Global sign
      *  2 :: Personal sign
      *
-     * @param x
-     * @param y
+     * @param x X location
+     * @param y Y location
      * @param type
+     * @return {Object}
+     * @constructor
      */
     Item = function(x, y, type){
         var image = {x:16, y:48, w:48, h:32};
@@ -558,12 +583,15 @@ $(document).ready(function () {
      *      3 = Stairs Both Sides
      *      4 = Stair Left
      *      5 = Stair Right
-     * @param x
-     * @param y
-     * @param type
-     * @param layout
-     * @param nW
-     * @param nH
+     *
+     * @param x X location
+     * @param y Y location
+     * @param type Block type
+     * @param layout Layout type
+     * @param nW Number of blocks wide
+     * @param nH Number of blocks high
+     * @return {Object}
+     * @constructor
      */
     Structure = function(x, y, type, layout, nW, nH){
         var ID = function(blockCount){
@@ -688,10 +716,13 @@ $(document).ready(function () {
      * Type: 1 = Brick
      *       2 = Metal
      *       3 = Glass
-     * @param x
-     * @param y
-     * @param type
-     * @param owner
+     *
+     * @param x X location
+     * @param y Y location
+     * @param type Block type
+     * @param owner Structure object that it belongs to
+     * @return {Object}
+     * @constructor
      */
     Block = function(x, y, type, owner){
         var image = {x:80, y:(16 * type), w:16, h:16};
@@ -725,6 +756,13 @@ $(document).ready(function () {
         };
     };
 
+    /**
+     *
+     * @param x X location
+     * @param y Y location
+     * @return {Object}
+     * @constructor
+     */
     Cloud = function(x, y){
         var image = {w:41, h:21, x:36, y:0};
         var type = randomFromTo(0, 1);
@@ -765,14 +803,6 @@ $(document).ready(function () {
     var player = new Player(initialPlayerLocation, floorHeight);
     var coin = new Coin(20, 20);
     var heart = new Heart(20, 58);
-
-    console.log(blocks.length);
-    if(debug){
-        terminalAppend(blocks.length);
-    }
-
-    var clouds = [];
-    var cloudCount = 4;
     for(var i = 0; i < cloudCount; i++){
         var x = randomFromTo(0, canvasWidth);
         var y = randomFromTo(10, 42);
@@ -794,7 +824,8 @@ $(document).ready(function () {
         if(level < 8){
             level = bitwiseRound(distance / 125);
         }
-        // Do something if key is pressed
+
+        // Keyboard Controls
         if(rightKey){
             //player.pos.offsetX += moveSpeed;
         }
@@ -802,6 +833,7 @@ $(document).ready(function () {
             //player.pos.offsetX -= moveSpeed;
         }
         if(upKey){
+            //Jump
             if(player.check(3) != 3){
                 if(player.movement.sliding){
                     player.movement.sliding = false;
@@ -810,9 +842,11 @@ $(document).ready(function () {
             }
         }
         if(downKey){
+            //Slide
             player.movement.sliding = true;
         }
         if(space){
+            //Jump
             if(player.check(3) != 3){
                 if(player.movement.sliding){
                     player.pos.offsetX -= player.settings.width;
@@ -830,6 +864,7 @@ $(document).ready(function () {
             player.life("inc");
             player.settings.coins = 0;
         }
+
         //Draw Clouds
         context.save();
         for(var i = 0; i < clouds.length; i++){
@@ -900,6 +935,7 @@ $(document).ready(function () {
         //Update Timer
         playTime++;
 
+        //Check if high score is matched
         if(globalHigh == distance){
             items.push(new Item(canvasWidth, floorHeight - 64, 1));
         }
@@ -971,6 +1007,7 @@ $(document).ready(function () {
 
     /**
      * Reset Game
+     * Resets all variables in the game.
      */
     function resetAll(){
         playTime = 0;
@@ -1014,6 +1051,10 @@ $(document).ready(function () {
         gameOver = true;
     }
 
+    /**
+     * Saves locally if the high score is better than current local high score.
+     * Saves online if the user is connected to Twitter.
+     */
     function saveHighScore(){
         if(Modernizr.localstorage){
             if(score > highScore){
@@ -1027,6 +1068,10 @@ $(document).ready(function () {
         }
     }
 
+    /**
+     * Updates the high score UI placements depending if the user is online or offline.
+     * If offline uses Local Storage score, otherwise will use highest database record for that user.
+     */
     function updateHighScore(){
         if(Modernizr.localstorage && localStorage.getItem('highScore')){
             highScoreOut.html(localStorage.getItem('highScore') + " meters <span class='offline'>(offline)</span>");
@@ -1049,6 +1094,9 @@ $(document).ready(function () {
         }
     }
 
+    /**
+     * Pushes the users high score to the database and refreshes high scores table.
+     */
     function updateOnlineScore(){
         updatingScores.show();
         $.ajax({
@@ -1078,9 +1126,9 @@ $(document).ready(function () {
     if(connected) terminalAppend("Twitter Username: " + twitter_username);
 
     /**
-     * Size the canvas
+     * Size the canvas, and reset variables which depend on canvas size.
      */
-    function innitCanvas(){
+    function initCanvas(){
         if(touchable || fullscreen){
             canvasWidth = $(window).get(0).innerWidth;
             canvasHeight = $(window).get(0).innerHeight;
@@ -1091,6 +1139,7 @@ $(document).ready(function () {
         canvas.attr("width", canvasWidth);
         canvas.attr("height", canvasHeight);
         floorHeight = canvasHeight - 49;
+        initialPlayerLocation = canvasWidth - (canvasWidth / 4);
     }
 
     /**
@@ -1138,6 +1187,9 @@ $(document).ready(function () {
         }
     }
 
+    /**
+     * Toggles if sound is audible or not.
+     */
     function toggleSound(){
         if(!muted){
             muted = true;
@@ -1163,7 +1215,7 @@ $(document).ready(function () {
 
     /**
      * Append messages to a console div.
-     * @param msg
+     * @param msg The message being displayed.
      */
     function terminalAppend(msg){
         $('#log').append("> " + msg + "\n");
@@ -1171,7 +1223,7 @@ $(document).ready(function () {
     }
 
     /**
-     * When play button is pressed
+     * When play button is pressed.
      */
     playButton.on("click touchend", (function(event){
         resetAll();
@@ -1184,7 +1236,7 @@ $(document).ready(function () {
     }));
 
     /**
-     * When play button is pressed
+     * When continue button is pressed.
      */
     continueButton.on("click touchend", (function(event){
         playGame = true;
@@ -1195,6 +1247,9 @@ $(document).ready(function () {
         uiOver.hide();
     }));
 
+    /**
+     * When exit button is pressed.
+     */
     exitButton.on("click touchend", (function(event){
         resetAll();
         playGame = false;
@@ -1205,29 +1260,34 @@ $(document).ready(function () {
         uiOver.hide();
     }));
 
+    /**
+     * When pause button is pressed.
+     */
     $('.togglePause').on("click touchend", togglePaused);
 
     /**
-     * When sound button is pressed
+     * When sound button is pressed.
      */
     $('.toggleSound').on("click touchend", toggleSound);
 
     /**
-     * When full screen button is pressed
+     * When full screen button is pressed.
      */
     $('.toggleFullScreen').toggle(function(){
-        toggleFullScreen();
         $(this).removeClass('fullscreen_alt');
         $(this).addClass('fullscreen_exit_alt');
+        toggleFullScreen();
+
 
     }, function(){
-        toggleFullScreen();
         $(this).removeClass('fullscreen_exit_alt');
         $(this).addClass('fullscreen_alt');
+        toggleFullScreen();
+
     });
 
     /**
-     * When debug button is pressed
+     * When debug button is pressed.
      */
     $('.toggleDebug').toggle(function(){
         debugMode();
@@ -1253,7 +1313,7 @@ $(document).ready(function () {
 
             $(".container").addClass("full");
             fullscreen = true;
-            innitCanvas();
+            initCanvas();
             resetFloor();
         } else{
             if(document.cancelFullScreen){
@@ -1266,22 +1326,25 @@ $(document).ready(function () {
 
             $(".container").removeClass("full");
             fullscreen = false;
-            innitCanvas();
+            initCanvas();
             resetFloor();
         }
     }
 
+    /**
+     * This is called when the game is not in focus.
+     */
     function outOfFocus(){
         if(playGame) pause = true;
         if(debug) terminalAppend("Window went out of focus");
     }
 
     /******
-     * Controls functions
+     * Keyboard and Touch Controls functions
      ******/
 
     /**
-     * Sets correct key to true
+     * Sets correct key being pressed to true
      * @param evt
      */
     function onKeyDown(evt){
@@ -1300,7 +1363,7 @@ $(document).ready(function () {
     }
 
     /**
-     * Sets correct key to false
+     * Sets correct key being released to false
      * @param evt
      */
     function onKeyUp(evt){
@@ -1407,8 +1470,8 @@ $(document).ready(function () {
             window.document.addEventListener('touchstart', onTouchStart, false);
             window.document.addEventListener('touchmove', onTouchMove, false);
             window.document.addEventListener('touchend', onTouchEnd, false);
-            window.addEventListener('resize', innitCanvas, false);
-            window.addEventListener('orientationchange', innitCanvas, false);
+            window.addEventListener('resize', initCanvas, false);
+            window.addEventListener('orientationchange', initCanvas, false);
             window.document.addEventListener("touchcancel", onTouchEnd, false);
         } else{
             $(document).keydown(onKeyDown);
@@ -1423,10 +1486,13 @@ $(document).ready(function () {
             }
         }
         if(fullscreen){
-            window.addEventListener('resize', innitCanvas, false);
+            window.addEventListener('resize', initCanvas, false);
         }
     });
 
+    /**
+     * Creates the game loop.
+     */
     function startGame(){
         requestAnimationFrame(startGame);
 
@@ -1445,7 +1511,9 @@ $(document).ready(function () {
 
     }
 
-    render();
+    /**
+     * Lets get playing the game.
+     */
     startGame();
 
 

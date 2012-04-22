@@ -4,6 +4,8 @@
  * Author: matthojo
  * Date: 15/03/2012
  * Time: 16:10
+ *
+ * Retrieves the top 10 high scores.
  */
 include '../settings.php';
 
